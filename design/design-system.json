@@ -1,0 +1,269 @@
+{
+  "$comment": "Extraído dos assets reais em /assets por brand-dna-extractor. Cores medidas por amostragem de pixels, não estimadas. Contraste calculado (WCAG 2.1). Ver /design/README.md para a metodologia.",
+  "meta": {
+    "generatedFrom": "assets/ (9 arquivos) + docs/dados-google-da-empresa.txt + docs/conteudo-textual-site.md",
+    "method": "sharp raw sampling: passe A dominante (quantização 12 níveis), passe B isolamento cromático (s>=45%, 12%<=l<=88%, janela de matiz)",
+    "date": "2026-08-20"
+  },
+
+  "brand": {
+    "name": "Santa Lúcia",
+    "fullName": "Santa Lúcia Clínica Veterinária & Pet Center",
+    "segment": "Clínica veterinária 24h, pet shop e estética animal",
+    "founded": 2015,
+    "location": "Bairro Santa Lúcia, Caxias do Sul — RS",
+    "positioning": "Pronto-socorro veterinário 24h com estrutura diagnóstica própria e áreas separadas por espécie"
+  },
+
+  "voice": {
+    "tone": ["acolhedor", "direto", "confiante sem arrogância", "urgente quando precisa ser"],
+    "persona": "A equipe que atende às 3 da manhã e fala com o tutor como quem também tem um bicho em casa.",
+    "principles": [
+      "Falar com o tutor, não sobre o pet. Quem lê está com medo, não curioso.",
+      "Número em vez de adjetivo: '70.000 pets' vale mais que 'muita experiência'.",
+      "Nunca prometer desfecho clínico. Prometer estrutura, presença e cuidado.",
+      "O plantão é o produto. Tudo o mais é consequência dele."
+    ],
+    "avoid": [
+      "'seu melhor amigo', 'anjinho', 'peludo' — clichê de pet shop, corrói autoridade clínica",
+      "linguagem de emergência em excesso: assusta o tutor que só quer agendar banho",
+      "jargão veterinário sem tradução",
+      "exclamação em série"
+    ]
+  },
+
+  "color": {
+    "$note": "amber falha contraste sobre creme (1,66:1). Amarelo é cor de SUPERFÍCIE e de ACENTO sobre roxo — nunca texto de corpo sobre claro. Para texto âmbar sobre creme existe amber-800.",
+
+    "primary": {
+      "name": "roxo-marca",
+      "hex": "#603084",
+      "hsl": "hsl(274 47% 35%)",
+      "source": "logo-santa-lucia-fundo-roxo.jpg — 87,3% dos pixels",
+      "role": "fundo institucional, faixas, badges circulares"
+    },
+    "primaryDeep": {
+      "name": "roxo-tinta",
+      "hex": "#482A78",
+      "hsl": "hsl(263 48% 32%)",
+      "source": "post-exclusividade-felina.jpg / post-banho-e-tosa.jpg — títulos",
+      "role": "títulos e texto de destaque sobre claro",
+      "contrastOnSurface": 10.19
+    },
+    "accent": {
+      "name": "âmbar-marca",
+      "hex": "#FCB400",
+      "hsl": "hsl(43 100% 49%)",
+      "source": "logo + todos os 4 posts — silhueta do cão, palavra de destaque, contornos",
+      "role": "segunda palavra do título sobre roxo, contornos, marcadores, o coração",
+      "contrastOnSurface": 1.66,
+      "contrastOnPrimaryDeep": 6.21,
+      "rule": "Só como texto sobre roxo. Sobre creme, apenas como forma/contorno, nunca como texto."
+    },
+    "lilac": {
+      "name": "lilás-textura",
+      "hex": "#E4D2F0",
+      "hsl": "hsl(276 50% 88%)",
+      "source": "patas decorativas em post-exclusividade-felina.jpg e post-banho-e-tosa.jpg",
+      "role": "patas e corações de fundo, divisores tracejados, superfície de card alternativa"
+    },
+    "surface": {
+      "hex": "#F7F4EF",
+      "source": "média medida dos fundos dos 4 posts (#F2EDEA, #F8F3F7, #E9E9E9, #F9F3F2)",
+      "role": "fundo padrão da página. Nunca #FFFFFF — a marca vive em creme quente."
+    },
+    "ink": {
+      "hex": "#2E1A47",
+      "role": "texto mais escuro da página. Nunca #000 — vira buraco ao lado do creme.",
+      "contrastOnSurface": 14.13
+    },
+    "body": {
+      "hex": "#5A4A6B",
+      "role": "texto de corpo sobre creme",
+      "contrastOnSurface": 7.29
+    },
+
+    "ramp": {
+      "purple": {
+        "50": "#F3EDF8", "100": "#E4D2F0", "200": "#C9A9E0", "300": "#A97ECC",
+        "400": "#8A57B4", "500": "#6F33A3", "600": "#5C2F83", "700": "#4C266D",
+        "800": "#3D1D58", "900": "#2D1542", "950": "#1D0D2B"
+      },
+      "amber": {
+        "50": "#FFF8E5", "100": "#FFEEC2", "200": "#FFDF8F", "300": "#FFCE52",
+        "400": "#FFC124", "500": "#FCB400", "600": "#DC9F04", "700": "#B08007",
+        "800": "#8B6609", "900": "#674D09"
+      },
+      "neutral": {
+        "0": "#FFFFFF", "50": "#F9F7F6", "100": "#F2F0EE", "200": "#E4E0DD",
+        "300": "#CDC7C1", "400": "#A69E96", "500": "#837A72", "600": "#696159",
+        "700": "#4F4740", "800": "#332E28", "900": "#201C18"
+      }
+    },
+
+    "contrast": [
+      { "pair": "ink #2E1A47 / surface", "ratio": 14.13, "passes": "AAA" },
+      { "pair": "primaryDeep #482A78 / surface", "ratio": 10.19, "passes": "AAA" },
+      { "pair": "primary #603084 / surface", "ratio": 8.49, "passes": "AAA" },
+      { "pair": "body #5A4A6B / surface", "ratio": 7.29, "passes": "AAA" },
+      { "pair": "white / primaryDeep", "ratio": 11.18, "passes": "AAA" },
+      { "pair": "amber #FCB400 / primaryDeep", "ratio": 6.21, "passes": "AA" },
+      { "pair": "lilac #E4D2F0 / primaryDeep", "ratio": 7.87, "passes": "AAA" },
+      { "pair": "amber #FCB400 / surface", "ratio": 1.66, "passes": "REPROVA — nunca como texto" },
+      { "pair": "amber-800 #8B6609 / surface", "ratio": 4.78, "passes": "AA — usar quando precisar de texto âmbar sobre claro" }
+    ],
+
+    "proportion": {
+      "$note": "Regra de dominância observada nos posts",
+      "surface": "60% — creme domina, a página respira",
+      "purple": "30% — faixas, seções invertidas, badges",
+      "amber": "10% — acento pontual. Passou disso, vira alerta de trânsito."
+    }
+  },
+
+  "typography": {
+    "observed": {
+      "wordmark": {
+        "description": "serif de alto contraste, eixo vertical, serifas finas — classe transicional/didone",
+        "source": "logo-santa-lucia-fundo-roxo.jpg, post-banho-e-tosa.jpg",
+        "case": "Capitalizado (Santa Lúcia)"
+      },
+      "wordmarkSub": {
+        "description": "sans geométrico, caixa alta, tracking largo (~0.15em), peso médio",
+        "source": "'CLÍNICA VETERINÁRIA & PET CENTER' em todos os assets"
+      },
+      "headline": {
+        "description": "duas famílias em uso: serif bold em 'Banho e tosa'; sans geométrico 800 em 'Exclusividade Felina', 'Atendimento 24 horas', 'Farmácia completa'",
+        "pattern": "primeira palavra em roxo, segunda em âmbar — assinatura da marca, preservar"
+      },
+      "list": {
+        "description": "sans geométrico 600, roxo, separadores tracejados lilás entre linhas"
+      }
+    },
+    "$chosenOwner": "frontend-design ratificou estas famílias na Fase 5. brand-dna-extractor entrega apenas 'observed' — a escolha da família não é dele.",
+    "chosen": {
+      "display": {
+        "family": "Playfair Display Variable",
+        "package": "@fontsource-variable/playfair-display",
+        "reason": "Mesma classe do wordmark (serif de alto contraste, eixo vertical). Cobertura latin-ext completa — ú, ã, ç, é renderizam corretos. Variável, então peso 400→900 sem carga extra.",
+        "usage": "display do hero, números grandes, nomes de seção quando a seção é emocional"
+      },
+      "sans": {
+        "family": "Plus Jakarta Sans Variable",
+        "package": "@fontsource-variable/plus-jakarta-sans",
+        "reason": "Geométrico-humanista, casa com o sub-wordmark e com os títulos dos posts, mas tem mais caráter que Poppins/Montserrat (que são a escolha genérica desse segmento). latin-ext completo.",
+        "usage": "títulos de seção, corpo, UI, labels"
+      },
+      "diacriticCheck": "Verificado: ção, Lúcia, não, coxins, matização, internação renderizam sem fallback nas duas famílias."
+    },
+    "scale": {
+      "$note": "clamp(min, fluido, max) — min é o valor em 360px, max em 1440px+",
+      "display": "clamp(3rem, 11vw, 9.5rem) / 0.92 / -0.03em / 700",
+      "h1": "clamp(2.5rem, 7vw, 5.5rem) / 0.98 / -0.025em / 700",
+      "h2": "clamp(2rem, 4.5vw, 3.5rem) / 1.05 / -0.02em / 700",
+      "h3": "clamp(1.375rem, 2.4vw, 1.875rem) / 1.2 / -0.01em / 600",
+      "lead": "clamp(1.125rem, 1.6vw, 1.375rem) / 1.55 / 0 / 400",
+      "body": "clamp(1rem, 1.15vw, 1.0625rem) / 1.65 / 0 / 400",
+      "small": "0.9375rem / 1.5 / 0 / 400",
+      "label": "0.75rem / 1.2 / 0.16em / 600 / uppercase",
+      "stat": "clamp(3.5rem, 8vw, 7rem) / 0.9 / -0.03em / 700",
+      "marquee": "clamp(4rem, 13vw, 15rem) / 0.85 / -0.02em / 700"
+    },
+    "measure": {
+      "body": "62ch",
+      "lead": "48ch",
+      "headline": "18ch"
+    }
+  },
+
+  "shape": {
+    "radius": {
+      "$note": "Medido nos posts: cards ~24px em 1020px de largura; faixas inferiores totalmente arredondadas",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "pill": "999px",
+      "usage": "Cards e imagens usam lg. Botões e faixas de destaque usam pill — é a assinatura da marca nos posts."
+    },
+    "containers": [
+      { "name": "card-branco", "spec": "fundo #FFFFFF, radius 24px, sombra difusa suave, sem borda", "source": "post-banho-e-tosa.jpg (lista de serviços)" },
+      { "name": "faixa-pill-roxa", "spec": "fundo roxo, radius 999px, texto branco com uma palavra em âmbar", "source": "post-banho-e-tosa.jpg (rodapé 'banho com sedação')" },
+      { "name": "faixa-pill-contornada", "spec": "fundo roxo, contorno âmbar 3px, radius 999px", "source": "post-exclusividade-felina.jpg (rodapé)" },
+      { "name": "badge-circular", "spec": "círculo roxo sólido, ícone de linha branco centralizado, 1-2 linhas de legenda abaixo", "source": "post-atendimento-24h (3 badges), post-farmacia" }
+    ],
+    "photoTreatment": [
+      { "name": "arco-organico", "spec": "foto mascarada em forma arredondada assimétrica, com contorno âmbar deslocado atrás", "source": "post-exclusividade-felina.jpg, post-farmacia-completa-24h.jpg", "note": "É o tratamento de foto mais característico da marca. Usar no lugar de retângulo arredondado sempre que a foto for de um pet." },
+      { "name": "recorte-sangrando", "spec": "pet recortado sangrando pela borda esquerda, sem moldura", "source": "post-atendimento-24h, post-banho-e-tosa" }
+    ],
+    "dividers": [
+      { "name": "tracejado-lilas", "spec": "1px dashed #E4D2F0, entre itens de lista", "source": "post-banho-e-tosa.jpg" },
+      { "name": "regua-ambar-coracao", "spec": "linha âmbar fina interrompida no centro por um coração de contorno", "source": "post-atendimento-24h.jpg" },
+      { "name": "curva-swoosh", "spec": "seções se encontram por uma curva orgânica, não por linha reta", "source": "post-banho-e-tosa.jpg (rodapé), post-exclusividade-felina.jpg (topo e base)" }
+    ]
+  },
+
+  "motifs": [
+    { "name": "coracao", "usage": "Símbolo central — o próprio logo é um cão e um gato formando um coração. Usar como divisor, marcador e no CTA.", "variants": ["contorno âmbar", "contorno roxo", "preenchido"], "opacity": "100%", "source": "todos os assets" },
+    { "name": "pata", "usage": "Textura de fundo. Nunca em primeiro plano, nunca como ícone funcional.", "opacity": "8–14% em lilás #E4D2F0", "source": "post-exclusividade-felina.jpg, post-banho-e-tosa.jpg" },
+    { "name": "selo-24h", "usage": "Emblema circular vermelho/escuro sobreposto ao logo. É o diferencial da marca — merece destaque próprio na página.", "source": "logo, fachada" },
+    { "name": "traco-manual", "usage": "Pequenos riscos âmbar em leque junto a títulos, e linha curva tracejada. Dá o tom de calor humano sobre a estrutura clínica.", "source": "post-banho-e-tosa.jpg, post-exclusividade-felina.jpg" },
+    { "name": "bolhas", "usage": "Contextual de banho e tosa apenas. Não generalizar.", "source": "post-banho-e-tosa.jpg" },
+    { "name": "blob-roxo-canto", "usage": "Massa roxa orgânica ancorando um canto da composição, sangrando para fora", "source": "post-atendimento-24h.jpg, post-exclusividade-felina.jpg" }
+  ],
+
+  "motion": {
+    "$note": "Derivado da identidade: a marca é curva, arredondada e calorosa. O movimento acompanha — nada linear, nada mecânico.",
+    "duration": { "instant": "0.12s", "fast": "0.2s", "base": "0.6s", "slow": "1.2s", "cinematic": "1.8s" },
+    "easing": {
+      "out": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "inOut": "cubic-bezier(0.65, 0, 0.35, 1)",
+      "soft": "cubic-bezier(0.33, 1, 0.68, 1)"
+    },
+    "signature": "Revelação por máscara curva (o swoosh da marca virando clip-path), não por fade retangular.",
+    "stagger": "0.10s padrão, 0.14s quando o deslocamento é horizontal"
+  },
+
+  "facts": {
+    "$note": "Somente o que está legível num asset ou documento do cliente.",
+    "phone": { "value": "(54) 3025-2223", "source": "docs/dados-google-da-empresa.txt + placa na fachada" },
+    "address": { "value": "R. Jacob Luchesi, 3230 — Santa Lúcia, Caxias do Sul/RS", "cep": "95032-000", "source": "docs/dados-google-da-empresa.txt" },
+    "hours": { "value": "24 horas, todos os dias, inclusive feriados", "source": "docs (FAQ) + selo 24h no logo" },
+    "founded": { "value": 2015, "source": "docs/dados-google-da-empresa.txt" },
+    "rating": { "value": "4,8/5", "reviews": "mais de 1.100", "source": "docs/dados-google-da-empresa.txt" },
+    "volume": { "value": "mais de 70.000 pets atendidos", "source": "docs/conteudo-textual-site.md" },
+    "years": { "value": "10+ anos", "source": "docs/conteudo-textual-site.md", "note": "2015→2026 = 11 anos. Usar '10+' ou atualizar com o cliente." },
+    "services": {
+      "clinical": ["pronto-socorro 24h", "consultas de rotina", "internação (cães e gatos, alas separadas)", "centro cirúrgico", "anestesiologia", "UTI veterinária", "vacinação", "castração", "microchipagem", "atestados e laudos"],
+      "diagnostic": ["laboratório interno próprio", "raio-X", "ultrassonografia", "diagnóstico por imagem"],
+      "grooming": ["banho", "tosa", "corte de unha", "matização", "hidratação", "hidratação de coxins", "banho com sedação"],
+      "retail": ["pet shop", "farmácia veterinária 24h", "medicamentos", "suplementos"],
+      "feline": ["recepção exclusiva", "consultório exclusivo", "internação exclusiva"],
+      "exotic": ["atendimento 24h para pets não convencionais"],
+      "source": "docs + os 4 posts de /assets"
+    },
+    "differentiators": [
+      "Plantão 24h real, não sobreaviso",
+      "Estrutura diagnóstica no local — resultado em minutos, não em dias",
+      "Ala felina completamente separada (recepção, consultório, internação)",
+      "Atendimento de pets não convencionais 24h",
+      "Farmácia veterinária aberta 24h",
+      "Boletins do internado por WhatsApp",
+      "Banho com sedação para pets que não toleram o procedimento acordados"
+    ]
+  },
+
+  "inferences": [
+    { "claim": "As famílias tipográficas escolhidas (Playfair Display + Plus Jakarta Sans) são substitutas de classe, não as fontes originais da marca.", "basis": "Impossível extrair arquivo de fonte de JPEG; classificação feita pelas formas das letras.", "confidence": "alta para a classe, média para a família exata", "action": "Confirmar com o cliente se existe manual de marca com as fontes originais." },
+    { "claim": "O creme #F7F4EF é o fundo institucional.", "basis": "Média dos 4 fundos de post medidos; variam entre #E9E9E9 e #F9F3F2.", "confidence": "média — a variação sugere que os posts foram feitos em momentos diferentes sem token fixo.", "action": "Propor #F7F4EF como padronização." },
+    { "claim": "O tratamento de foto em arco orgânico com contorno âmbar é assinatura da marca.", "basis": "Aparece em 2 dos 4 posts, sempre com foto de pet.", "confidence": "alta" }
+  ],
+
+  "unverified": [
+    { "item": "Conflito: o FAQ do site atual diz 'foco principal em cães e gatos, consulte-nos para outras espécies', mas o post de /assets anuncia 'Especialistas em pets não convencionais' com atendimento 24h.", "impact": "alto — é um diferencial forte se confirmado, e uma promessa falsa se não.", "action": "Confirmar com o cliente antes de publicar. O post é mais recente e mais específico, então a hipótese é que o FAQ do site está desatualizado." },
+    { "item": "E-mail de contato e link direto do WhatsApp não aparecem em nenhum asset.", "action": "Solicitar. O WhatsApp é o canal de conversão principal desta LP e não existe número confirmado para ele." },
+    { "item": "Estacionamento: o site diz 'vagas próximas', a foto da fachada mostra vagas na calçada em frente. Não há estacionamento próprio evidente.", "action": "Ajustar a copy para não prometer estacionamento privativo." },
+    { "item": "Nomes e CRMV da equipe clínica.", "action": "Necessário se a LP tiver seção de equipe. Sem isso, não gerar rostos — usar as fotos reais ou nenhuma." },
+    { "item": "Redes sociais listadas (Instagram, Facebook, YouTube, LinkedIn) sem URLs.", "action": "Solicitar handles para o rodapé." }
+  ]
+}

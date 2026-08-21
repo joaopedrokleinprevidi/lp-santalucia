@@ -7,11 +7,26 @@ Este repositório reúne, por enquanto, os materiais de base do projeto: identid
 ## Estrutura
 
 ```
-.claude/skills/     Especialistas de criação, motion e acessibilidade
+.claude/skills/     14 especialistas: marca, storytelling, design, motion, vídeo, auditoria
 assets/             Imagens da marca, fachada e posts sociais
-docs/               Conteúdo textual do site e dados da empresa
+design/             Design system, blueprint da LP, prompts de imagem e animação
+docs/               Conteúdo textual do site antigo e dados da empresa
 CLAUDE.md           Workflow obrigatório e critérios de qualidade
 ```
+
+## Estado do projeto
+
+As quatro primeiras fases do pipeline estão prontas em [design/](design/):
+
+| Artefato | O que é |
+| --- | --- |
+| [design-system.json](design/design-system.json) | Cores medidas pixel a pixel dos assets, tipografia, motifs, voz e os fatos verificáveis do negócio |
+| [landing-blueprint.md](design/landing-blueprint.md) | 11 seções com a copy definitiva, escrita do zero |
+| [image-prompts.md](design/image-prompts.md) | 8 prompts para gerar as imagens no GPT, com o Style Anchor congelado |
+| [motion-prompts.md](design/motion-prompts.md) | 7 prompts de animação para o Google Flow, com a técnica de destino de cada seção |
+
+O que falta: gerar as imagens, animá-las, e construir o site. O passo a passo está em
+[design/README.md](design/README.md), e o pipeline completo na skill `landing-page-factory`.
 
 ## Assets
 
