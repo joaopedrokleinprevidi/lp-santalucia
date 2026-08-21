@@ -5,6 +5,70 @@ Implementações prontas para os tokens do [SKILL.md](SKILL.md). Todas importam 
 relativo ao arquivo) e rodam dentro de um `gsap.matchMedia('(prefers-reduced-motion:
 no-preference)')`.
 
+## 0. Esqueleto de um capítulo
+
+A timeline autorada em story units. `useChapterTimeline` já faz tudo isto — use-o. A forma
+explícita existe para entender o que ele faz e para depurar quando não faz:
+
+```tsx
+useLayoutEffect(() => {
+  const scope = ref.current
+  if (!scope) return
+
+  // Escopo: todo seletor em string aqui dentro resolve só dentro deste capítulo.
+  const mm = gsap.matchMedia(scope)
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.set('[data-lead]', { autoAlpha: 0, y: 24 })
+
+    const tl = gsap.timeline({
+      // Sem isto o ease padrão do GSAP (power1.out) entra em cima do scrub.
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scope,
+        // O stage é sticky: progresso 0 é quando ele gruda, 1 quando solta.
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    })
+
+    // seal() fixa a duração total em exatamente 1. Sem ele o scrub normaliza
+    // pelo último tween — 0.16 + 0.035 = 0.195 viraria progresso 1, e todas as
+    // posições em story unit passariam a significar outra coisa.
+    seal(tl).to('[data-lead]', { autoAlpha: 1, y: 0, duration: 0.035 }, 0.16)
+
+    return () => {
+      /* cleanup extra — listeners, observers, triggers criados à mão */
+    }
+  })
+
+  return () => mm.revert()
+}, [ref])
+```
+
+Seletor em string dentro do `mm.add` já resolve só neste capítulo — use `q(scope, sel)` de
+`src/lib/gsap.ts` apenas quando precisar do array em si (medir, checar `.length`, iterar).
+
+`matchMedia` **é** um `gsap.context()` com condição: não empilhe os dois. Sob `reduce` o bloco
+nunca roda, nenhuma propriedade é escrita no DOM e o markup fica no estado natural, visível —
+melhor que animar com duração zero, que ainda deixa inline styles para trás.
+
+### Ordem de medição
+
+`start`/`end` são pixels calculados no momento da criação do trigger. Chame
+`ScrollTrigger.refresh()` depois de qualquer coisa que mude a altura do documento: fontes
+carregando, canvas montando, imagem sem `aspect-ratio` reservado.
+
+Antes de medir line boxes espere as fontes, mas com teto. `typographyReady()` em
+`src/lib/gsap.ts` faz `Promise.race` entre `document.fonts.ready` e 1600ms: em cache frio as
+faces podem demorar segundos, e bloquear nelas deixa o visitante vendo um filme mudo. Quebras de
+linha ligeiramente diferentes são uma falha muito menor que copy que nunca chega.
+
+Segurar um elemento na tela é `position: sticky`, não `pin: true` — a comparação completa está
+na tabela de `gsap-scrolltrigger-expert`.
+
 ## 1. Reveal de copy que toca uma vez
 
 O scroll decide *quando* a linha chega; a animação decide *a que velocidade*. Enquanto o
@@ -214,6 +278,66 @@ mesma propriedade, e sem overwrite elas se somam e a cor pisca no caminho.
 
 `background-color` é paint, não composite — aceitável no `body` porque acontece uma vez por
 seção, inaceitável dentro de um scrub.
+
+---
+
+## Invariantes de setup
+
+O setup é escrito uma vez, em `src/lib/gsap.ts` e
+`src/components/providers/SmoothScrollProvider.tsx`, e é de `gsap-scrolltrigger-expert`. Estas
+oito invariantes são o que se **confere** antes de aprovar qualquer motion. Cada uma quebra de um
+jeito específico, e o sintoma é como se descobre qual falhou:
+
+| Invariante | Sintoma quando falta |
+|---|---|
+| `gsap.registerPlugin(ScrollTrigger)` só em `src/lib/gsap.ts` | Com HMR do Vite cada save soma uma instância; a página fica progressivamente mais lenta em dev e volta ao normal depois de um reload |
+| `ScrollTrigger.config({ ignoreMobileResize: true })` | Barra de URL retrátil muda a viewport no meio do scroll e todo capítulo re-mede e salta |
+| `lenis.on('scroll', () => ScrollTrigger.update())` | O ScrollTrigger lê a posição um frame atrás: o texto arrasta visivelmente atrás do fundo |
+| `gsap.ticker.add((t) => lenis.raf(t * 1000))` | O ticker conta em segundos e o Lenis espera ms; sem o `× 1000` o scroll nunca assenta |
+| `gsap.ticker.lagSmoothing(0)` | Um frame longo é "recuperado" ajustando o delta, e numa timeline scrubbed isso é um salto de posição |
+| Lenis nunca instanciado sob `prefers-reduced-motion: reduce` | Suavizar o scroll de quem pediu menos movimento é movimento não solicitado |
+| Todo efeito dentro de `gsap.matchMedia(scope)`, com `mm.revert()` no cleanup | Strict Mode do React 19 monta duas vezes: sem `revert()` sobram triggers apontando para nós fora do DOM, e a animação roda com o dobro da velocidade — só em dev |
+| `useLayoutEffect`, nunca `useEffect`, para o `gsap.set` que esconde a copy | O navegador pinta o texto visível e só depois ele some: flash em toda montagem |
+
+Duas dependências, não três: o pacote é `lenis` — `@studio-freight/lenis` foi renomeado e está
+obsoleto. GSAP e Lenis vêm do `package.json`, nunca de CDN: uma segunda cópia registra um segundo
+ScrollTrigger e os dois disputam o mesmo scroller.
+
+## Custo por propriedade
+
+| Propriedade | Fase | Custo | Causa |
+|---|---|---|---|
+| `transform` (`x`, `y`, `scale`, `rotation`) | composite | GPU | O elemento já tem textura própria; mudar a matriz não remede nem repinta nada |
+| `opacity` / `autoAlpha` | composite | GPU | Só o alpha de blend da camada muda |
+| `filter: blur()` | composite | médio | Roda na GPU, mas refiltra a textura inteira a cada frame. Acima de 8px em elemento grande derruba o fps |
+| `clip-path: inset() / circle()` | composite | médio | Formas simples são baratas; `polygon()` com muitos pontos volta para o paint |
+| `color`, `background-color` | paint | médio | Não remede, mas repinta a área toda em toda frame |
+| `box-shadow` | paint | alto | Repinta um retângulo maior que o próprio elemento. Use uma camada duplicada com `opacity` variando |
+| `width`, `height` | **layout** | alto | Muda o tamanho da caixa, então o navegador recalcula a posição de tudo que vem depois no fluxo. Use `scaleX`/`scaleY` |
+| `margin`, `padding` | **layout** | alto | Mesmo reflow; `padding` ainda repinta o fundo |
+| `top`, `left`, `right`, `bottom` | **layout** | alto | Dispara reflow do containing block. Use `x`/`y` |
+| `font-size`, `letter-spacing` | **layout** | muito alto | Relayout de todas as line boxes. Com máscaras por palavra (`.word`), o custo é por palavra |
+| `border-width` | **layout** | alto | Muda a caixa. Anime `border-color`, ou use `box-shadow: inset` |
+| `scrollTop` via JS | layout + conflito | proibido | O Lenis é dono do scroll; escrever `scrollTop` gera um evento que ele interpreta como input do usuário e o scroll briga consigo mesmo |
+
+Teste rápido: **se a propriedade pode mudar onde outro elemento fica, ela é layout.**
+
+## Anti-patterns de implementação
+
+Os seis mais comuns estão no [SKILL.md](SKILL.md#anti-patterns). Estes completam a lista:
+
+- **`filter: blur(0px)` deixado no fim de um reveal** — um blur assentado ainda mantém o texto em
+  camada própria e ainda consome VRAM. `useChapterReveals.ts` faz
+  `gsap.set(lines.flat(), { clearProps: 'filter' })` no `onComplete` por isso.
+- **Animação CSS e tween do GSAP no mesmo elemento** — as duas escrevem a mesma matriz de
+  transform e a última a rodar no frame vence, o que aparece como tremor.
+- **`y` em px num parallax** — o mesmo número some no desktop e estoura no mobile. `yPercent`.
+- **Tween para `var(--token)`** — o GSAP não parseia a string como cor e salta para o valor final.
+  Resolva com `getComputedStyle().getPropertyValue()` fora do trigger.
+- **Timeline de capítulo sem `seal()`** — o scrub normaliza pela duração do último tween, e toda
+  posição em story unit passa a significar outra coisa.
+- **`document.querySelectorAll` num efeito de capítulo** — a busca global pega os nós de outros
+  componentes e dois observers passam a brigar pelo mesmo elemento. Escope no `ref`.
 
 ---
 

@@ -5,7 +5,14 @@ argument-hint: [pasta-de-assets] [nome-da-marca]
 allowed-tools: Read, Glob, Grep, Write, Bash(node *), Bash(npx *)
 ---
 
-# Brand DNA Extractor
+# Brand DNA Extractor — Fase 2
+
+| | |
+|---|---|
+| **ENTRADA** | `design/inventario.json` (os vereditos por arquivo de `estudo-assets`: `usable`, `maxRenderWidth`, `reference`), os arquivos aprovados dentro de `assets-source/`, e `design/briefing.json` (`meta.niche`, `business.name`, `services`) |
+| **SAÍDA** | `design/design-system.json` — `brand`, `voice`, `color` (hex medidos, rampa, contraste), `typography.observed` com `chosen: null`, `shape`, `motifs`, `facts`, `inferences`, `unverified` |
+| **ANTES** | `estudo-assets` (Fase 1) já abriu cada arquivo e decidiu quais servem. Esta skill não re-inventaria: começa nos pixels dos arquivos aprovados |
+| **DEPOIS** | `auditoria-dados` (Fase 3) cruza `facts` e `unverified` daqui com o briefing e monta `design/lacunas.md` |
 
 Real brands arrive as a folder of JPEGs, not a style guide. This skill turns that folder into
 `design/design-system.json` — the single source of truth every downstream specialist reads.
@@ -21,6 +28,18 @@ two yellows, a border radius that changes per component. The client sees their b
 rendered, which reads worse than a page that never tried.
 
 ## Step 1 — Inventory the assets
+
+**If `design/inventario.json` exists, read it first and do not re-inventory.** `estudo-assets`
+already opened every file, measured it, and recorded `dimensions`, `usable`, `maxRenderWidth`,
+`shows`, `rights` and the reason behind every discard. Trust those verdicts: a second, divergent
+inventory is how a project ends up with two answers about the same logo. Your job here starts at
+the pixels — colour, type class, shape, motif — on the files that inventory marked usable, plus
+any file marked `reference: true`.
+
+The boundary in one line: `estudo-assets` asks "is this true and may we publish it?";
+this skill asks "what is the brand made of?".
+
+Only when there is no `inventario.json` (this skill invoked on its own, outside the pipeline):
 
 ```bash
 ls -la <ASSETS_DIR>
@@ -196,11 +215,11 @@ Keep `facts` and `inferences` structurally separate. Downstream skills are allow
 
 ## Handoff
 
-`design/design-system.json` feeds, in the CLAUDE.md order:
-`creative-direction-expert` (budget) → `landing-storytelling-director` (structure and copy) →
-`ai-visual-prompt-director` (image prompts — the palette becomes the style anchor) →
+`design/design-system.json` feeds, in pipeline order (phases 5 → 6a → 6b → 8a → 10a → 10b):
+`creative-direction-expert` (budget) → `estrutura-secoes` (section order) → `copy-conversao`
+(copy) → `prompt-imagem` (image prompts — the palette becomes the style anchor) →
 `product-design-expert` (scale, ramp, contrast) → `frontend-design` (family, texture, colour
 proportion — it fills `typography.chosen`).
 
-When the JSON changes, those four re-read it. It is not copied into their outputs — it is
+When the JSON changes, those six re-read it. It is not copied into their outputs — it is
 referenced, so a corrected hex propagates instead of being pasted in five places.

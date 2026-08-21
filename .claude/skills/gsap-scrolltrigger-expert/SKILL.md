@@ -1,21 +1,31 @@
 ---
 name: gsap-scrolltrigger-expert
-description: Use when building scroll behaviour with GSAP ScrollTrigger — scrubbed timelines, parallax layers, pinned sections, reveal on scroll, horizontal scroll, card stacking, mask/clip reveals, background colour handoff, word-by-word text — or when wiring Lenis smooth scroll to the GSAP ticker. Também para depurar trigger que dispara no lugar errado, pin que quebra layout, ou scroll travado. Keywords: scroll, scrollTrigger, scrub, pin, pinSpacing, parallax, sticky, timeline, reveal, marcadores, markers, refresh, matchMedia, Lenis, horizontal.
+description: Use when building scroll behaviour with GSAP ScrollTrigger — scrubbed timeline, parallax, pinned section, reveal on scroll, horizontal scroll, card stacking, mask/clip reveal, background colour handoff, word-by-word text — or wiring Lenis smooth scroll to the GSAP ticker. Também para trigger que dispara no lugar errado, pin que quebra layout ou scroll travado. Keywords: scrub, pinSpacing, sticky, marcadores, markers, refresh, matchMedia.
 argument-hint: [secao-ou-efeito]
 ---
 
 # GSAP ScrollTrigger
 
+| | |
+|---|---|
+| **ENTRADA** | `design/creative-direction.json` (`scroll` e `scrollMobile` por capítulo, `points`, `entrance`); os tokens de duração e easing que `landing-motion-expert` gravou em `src/styles/index.css`; os componentes em `src/components/chapters/`; `src/lib/gsap.ts` e `src/components/providers/SmoothScrollProvider.tsx` |
+| **SAÍDA** | os hooks de scroll em `src/hooks/` e o `<Chapter>` de cada capítulo com trigger, `start`, `end` e `scrub` escritos — mais o bloco "Chapter mechanics" de `src/styles/index.css` quando o pin é CSS |
+| **ANTES** | quem chama é `landing-motion-expert` (Fase 10c), toda vez que o scroll controla algo: pin, scrub, parallax, progresso de capítulo, trilho horizontal. `video-decisao` também chama, para o fallback `mode="scrub"` |
+| **DEPOIS** | `audit-responsivo` (Fase 11a) mede `scrollMobile` e pin no celular; `audit-acessibilidade` (Fase 11b) verifica que nenhuma condição do `matchMedia` casa sob `prefers-reduced-motion` |
+
+Fora do trilho linear: esta skill não tem uma fase própria e não roda sozinha. Ela é a
+implementação para a qual a Fase 10c roteia.
+
 Scroll é uma linha do tempo com uma cabeça de leitura que o visitante move. Esta skill decide
 **como** o scroll se comporta: onde um efeito começa, quanto scroll ele consome, e o que ele
 custa em milissegundos.
 
-O que ela não decide: quais seções existem (`landing-storytelling-director`), o que merece um
+O que ela não decide: quais seções existem (`estrutura-secoes`), o que merece um
 efeito (`creative-direction-expert`), como um botão reage ao mouse (`motion-ui-expert`), nem
 quais durações, curvas, distâncias e stagger a página inteira usa — a linguagem de motion é do
 `landing-motion-expert`. Os números daqui são só os de scroll: onde disparar, quanto scroll
-consumir, quando pinar. O gate final de mobile, teclado e leitor de tela é
-`responsive-e-acessibility`.
+consumir, quando pinar. O portão final de mobile é `audit-responsivo`; o de teclado e leitor de
+tela, `audit-acessibilidade`.
 
 **Esta skill é dona do setup** — registro do GSAP, instanciação do Lenis, wiring do ticker e
 ciclo de vida em React. Quem audita se ele está correto é o `landing-motion-expert`, pela tabela
@@ -67,22 +77,10 @@ customizado. Com o default (a janela) não use — é uma camada a mais para des
 `gsap.matchMedia(scope)` **já é** um `gsap.context()`. Não empilhe os dois. Um `mm.revert()`
 no cleanup mata triggers, tweens e estilos inline escritos por dentro dele.
 
-```ts
-useLayoutEffect(() => {
-  const scope = ref.current
-  if (!scope) return
-  const mm = gsap.matchMedia(scope)   // escopa seletores string a este subtree
-
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
-    /* nada aqui roda sob reduced motion — nenhuma propriedade é escrita */
-  })
-
-  return () => mm.revert()
-}, [ref])
-```
-
 `useLayoutEffect`, não `useEffect`: o estado inicial (`gsap.set` com `autoAlpha: 0`) precisa
-ser escrito antes do primeiro paint, senão a copy pisca visível e depois some.
+ser escrito antes do primeiro paint, senão a copy pisca visível e depois some. O hook completo,
+com o `scope` do `ref` e o `mm.revert()` no retorno, está em
+[recipes.md](recipes.md#esqueleto-de-matchmedia).
 
 ## START / END — a tabela
 
@@ -191,34 +189,10 @@ só os pontos de disparo, não o destino.
 ## matchMedia como padrão
 
 Três condições, sempre as mesmas, sempre juntas. Reduced motion não é uma seção no rodapé —
-é uma condição que simplesmente não constrói a animação.
-
-```ts
-const mm = gsap.matchMedia(scope)
-
-mm.add(
-  {
-    desktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
-    mobile: '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
-  },
-  (context) => {
-    const { desktop } = context.conditions as { desktop: boolean; mobile: boolean }
-
-    gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: scope,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
-    }).fromTo('[data-bg]', { yPercent: desktop ? -12 : -6 }, { yPercent: desktop ? 12 : 6 }, 0)
-  },
-)
-
-return () => mm.revert()
-```
+é uma condição que simplesmente não constrói a animação. O esqueleto completo — objeto de
+condições nomeadas, leitura de `context.conditions`, travel de desktop e mobile no mesmo tween,
+`mm.revert()` no cleanup — está em
+[recipes.md](recipes.md#esqueleto-de-matchmedia).
 
 Não existe branch `reduced`. Nenhuma condição casa, nada é criado, nada é escrito no DOM — e
 por isso **o markup tem que ser legível no estado natural**. Toda animação de entrada usa
@@ -231,7 +205,7 @@ normais. Ver o bloco final de `src/styles/index.css`.
 Desktop e mobile não são a mesma animação mais fraca. Mobile: menos deslocamento (metade do
 travel), menos beats por capítulo, zero pin de várias telas, e `scrollMobile` entre 0,68 e 0,75
 × `scroll` — faixa de
-[landing-storytelling-director](../landing-storytelling-director/SKILL.md#pacing), que é dona
+[estrutura-secoes](../estrutura-secoes/SKILL.md#convertendo-share-em-scroll), que é dona
 desse número; aqui ele é consumido, não redefinido.
 
 ## Receitas
@@ -261,24 +235,8 @@ ordem economiza a maior parte do tempo:
    queria um parágrafo, o `trigger` é o wrapper.
 3. Os marcadores se deslocam depois que uma fonte ou imagem carrega? Falta `refresh()`.
 
-| Sintoma | Causa |
-|---|---|
-| Dispara uma tela cedo ou tarde | `trigger` é o wrapper alto, não o elemento |
-| Estava certo, saiu do lugar depois de carregar | altura mudou depois do refresh — fontes ou imagem sem dimensão reservada |
-| Marcadores certos, nada anima | seletor não resolve dentro do `scope`, ou nenhuma condição do `matchMedia` casou |
-| Pin salta um frame ao entrar | falta `anticipatePin: 1` |
-| Layout quebra ao ligar o pin | `pin-spacer` entrou entre o pai e o filho — pine um wrapper |
-| Elemento pinado some | ancestral com `overflow: hidden` ou `transform` |
-| Scroll briga consigo mesmo | GSAP registrado duas vezes, ou Lenis sem `ScrollTrigger.update` |
-| Micro-jitter constante com scrub | Lenis rodando o próprio `raf` em vez do `gsap.ticker` |
-| Salto de posição depois de um travamento | falta `gsap.ticker.lagSmoothing(0)` |
-| Tudo re-mede no scroll do celular | falta `ScrollTrigger.config({ ignoreMobileResize: true })` |
-| Anima duas vezes / valores dobrados | falta `mm.revert()` no cleanup — Strict Mode montou duas vezes |
-| Timeline com scrub parece atrasada | scrub numérico empilhado sobre o Lenis |
-
-Perfil rápido: DevTools → Performance, 4× CPU throttle, rolar a seção. Barras roxas
-(Layout/Recalculate Style) durante o scrub significam que algo fora de `transform`/`opacity`
-está sendo animado.
+Os 12 sintomas mais frequentes com a causa de cada um, e como tirar o perfil no Performance com
+4× de throttle, estão em [recipes.md](recipes.md#tabela-de-sintoma-e-causa).
 
 ## Anti-patterns
 

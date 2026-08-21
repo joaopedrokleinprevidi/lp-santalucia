@@ -1,7 +1,7 @@
-# Textura e atmosfera — receitas estendidas
+# Textura e atmosfera — receitas
 
-As quatro receitas base (grain, malha, grade de pontos, sombra) estão na
-[seção 5 do SKILL.md](SKILL.md). Aqui ficam as demais, com custo e limite.
+O código de toda camada de textura. Quando cada uma entra, o limite numérico de cada uma e os
+três portões de contraste estão na [seção 5 do SKILL.md](SKILL.md) — aqui fica a implementação.
 
 ## Tabela de custo
 
@@ -21,6 +21,77 @@ As quatro receitas base (grain, malha, grade de pontos, sombra) estão na
 Regra de orçamento: **no máximo um `backdrop-filter` visível por vez, e nunca em elemento de
 viewport inteira.** Medição: DevTools → Rendering → Frame Rendering Stats, rolando a página
 inteira. Abaixo de 55fps sustentado, remova a camada mais recente e meça de novo.
+
+## Grain — o mais barato e o mais eficaz
+
+```css
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+```
+
+O `feTurbulence` é rasterizado **uma vez** num tile de 160×160; depois é uma camada composta e
+nada mais. `position: fixed` sobre um capítulo com vídeo deixa o grão parado enquanto a cena se
+move — é isso que lê como película.
+
+Tile ≥128px: abaixo disso o padrão se repete visivelmente. `opacity` acima de 0.06 lê como sujeira
+na fotografia, não como textura, e o corpo abaixo dela perde contraste mensurável.
+
+## Gradiente de malha
+
+```css
+.mesh {
+  background-color: var(--color-canvas-soft);
+  background-image:
+    radial-gradient(60% 45% at 12% 18%, color-mix(in oklab, var(--color-rose) 26%, transparent) 0%, transparent 70%),
+    radial-gradient(50% 40% at 88% 8%, color-mix(in oklab, var(--color-gilt) 22%, transparent) 0%, transparent 65%),
+    radial-gradient(70% 60% at 50% 100%, color-mix(in oklab, var(--color-ink) 18%, transparent) 0%, transparent 72%);
+}
+```
+
+Um mesh varia o fundo ao longo da seção, então o texto por cima tem contraste variável. Meça no
+blob mais escuro **e** no ponto mais claro; se um dos dois reprova, baixe as porcentagens do
+`color-mix` até os dois passarem, em vez de escurecer o texto.
+
+## Grade de pontos e filetes
+
+```css
+.dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in oklab, var(--color-ink) 14%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
+}
+```
+
+Alpha ≤0.16 — acima disso a grade compete com o texto em vez de dar chão. Para régua de colunas,
+desenhe com `border-inline-start` em elementos reais, não com `background-size: calc(100% / 12)`:
+em largura não-inteira as linhas caem em pixel fracionário e tremem no resize.
+
+## Sombra com intenção
+
+```css
+--shadow-card: 0 1px 2px rgb(50 21 30 / 0.04), 0 12px 32px -12px rgb(50 21 30 / 0.16);
+```
+
+- **Contato**: blur 1–2px, alpha 0.04–0.08. É o que faz o objeto tocar a superfície.
+- **Ambiente**: blur 24–48px, spread negativo, alpha 0.12–0.24. É o que dá altura.
+- **Tinja com a tinta da marca** (`rgb(50 21 30)` = `--color-ink`), nunca preto puro. Preto sobre
+  fundo quente lê como sujeira.
+
+Uma sombra estática é paint pago uma vez. Se o elemento anima **só** `transform`, a camada inteira
+— sombra junto — é composta e nada repinta, por mais alto que seja o blur. O que custa é animar a
+própria sombra: aí o retângulo é repintado a cada frame, e com blur >40px isso derruba o alvo de
+60fps. Para "levantar" no hover, cruze duas camadas de sombra com `opacity` em vez de interpolar
+o blur.
 
 ## Vinheta e scrim sobre fotografia
 
@@ -190,6 +261,45 @@ de viewport inteira custa `width × height` iterações — em 2560×1440 são 3
 o frame é perdido. 256×256 são 65 mil.
 
 Repinte só no `resize`, nunca no scroll.
+
+## Derivar tom da marca sem inventar cor
+
+Quando a marca fixou os hexes mas não o tom, derive a partir do que já existe. Entre **dois hues
+saturados**, `color-mix`/gradiente em `oklab` mantém a croma no meio do caminho; em `srgb` o
+midpoint dessatura — por isso a interpolação de marca é sempre `in oklab`. Misturar uma cor com
+`transparent` é o caso barato: os dois espaços entregam quase a mesma rampa, e é por isso que
+`.rule-gilt` usa `in srgb` sem prejuízo.
+
+```css
+/* tint da marca — não é uma cor nova, é a mesma cor com menos presença */
+background-color: color-mix(in oklab, var(--color-rose) 12%, transparent);
+border-color: color-mix(in oklab, var(--color-ink) 18%, transparent);
+```
+
+E o inverso do erro clássico: **nunca crie `linear-gradient(180deg, var(--brand), white)`.**
+Interpolar uma cor saturada até o branco em sRGB atravessa uma faixa lavada — que é exatamente a
+cor do slop. Se precisar de degradê da marca, interpole `in oklab` e pare em 60%, sem chegar ao
+branco.
+
+## Medir a proporção de área
+
+A dominante precisa de ≥60% da área do viewport e o accent de <15%. Cole no console com a página
+aberta, no capítulo que quiser medir:
+
+```js
+const area = new Map()
+for (const el of document.querySelectorAll('*')) {
+  const r = el.getBoundingClientRect()
+  if (r.width < 4 || r.height < 4) continue
+  const bg = getComputedStyle(el).backgroundColor
+  if (bg === 'rgba(0, 0, 0, 0)') continue
+  area.set(bg, (area.get(bg) ?? 0) + r.width * r.height)
+}
+console.table([...area].sort((a, b) => b[1] - a[1]).slice(0, 6))
+```
+
+Se as três primeiras linhas estão empatadas, não há direção — a página está no `50 / 30 / 20` que
+lê como template.
 
 ## Cursor custom
 

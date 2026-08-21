@@ -7,13 +7,66 @@ O `SKILL.md` ao lado cobre *como decidir*. Este arquivo cobre *o que existe*.
 
 ---
 
+## Padrão de código real
+
+Código real vem da stack instalada e traz o *porquê* onde a linha é contraintuitiva. O padrão do
+repositório, extraído de `src/hooks/useChapterTimeline.ts`:
+
+```tsx
+import { useLayoutEffect } from 'react'
+
+import { gsap, seal } from '../lib/gsap'
+
+// Dentro de useChapterTimeline(ref, build): `ref` é o RefObject do capítulo e
+// `builderRef` guarda o `build` atual sem entrar nas deps do efeito.
+useLayoutEffect(() => {
+  const scope = ref.current
+  if (!scope) return
+
+  const mm = gsap.matchMedia(scope)
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scope,
+        start: 'top top',
+        end: 'bottom bottom',
+        // Lenis já fornece o easing; um scrub numérico por cima lê como lag.
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    })
+
+    builderRef.current(seal(tl), scope)
+  })
+
+  return () => mm.revert()
+}, [ref])
+```
+
+Quatro coisas o tornam real, e nenhuma é opcional:
+
+- **`gsap.matchMedia` com escopo** — sob `prefers-reduced-motion` nenhuma propriedade chega ao
+  DOM, e seletor de string dentro de um capítulo não alcança outro.
+- **`mm.revert()` no cleanup** — React 19 Strict Mode monta duas vezes; sem isso todo
+  ScrollTrigger é registrado em dobro e a página briga com ela mesma.
+- **O import vem de `src/lib/gsap`**, nunca de `'gsap'` direto — `registerPlugin(ScrollTrigger)`
+  roda uma vez lá; um segundo registro em outro arquivo duplica o plugin.
+- **O comentário explica a causa**, não o que a linha faz.
+
+Escrever exemplo em vanilla JS com GSAP via CDN é erro de fato aqui: uma segunda cópia registra um
+segundo ScrollTrigger e os dois disputam o mesmo scroller.
+
+---
+
 ## CLAUDE.md ou skill?
 
 | | CLAUDE.md | Skill |
 |---|---|---|
 | **Quando carrega** | Toda conversa, sempre | Só quando invocada (`/nome` ou auto-detecção) |
 | **Para que serve** | Regras do projeto, convenções, contexto permanente | Fluxo de uma tarefa específica |
-| **Custo de contexto** | Sempre presente — mantenha enxuto | Só quando usada — mas mantenha abaixo de 500 linhas |
+| **Custo de contexto** | Sempre presente — mantenha enxuto | Só quando invocada — mantenha entre 150 e 300 linhas |
 | **Exemplos** | "TypeScript em todos os arquivos", "rode os testes antes de commitar" | "Gerar resumo de PR", "extrair frames de vídeo", "auditar um capítulo" |
 
 Regra: se Claude **sempre** precisa saber, é CLAUDE.md. Se precisa saber **ao fazer X**, é skill.
@@ -308,12 +361,12 @@ Skills e subagentes se combinam nas duas direções:
 
 ## Arquivos de apoio
 
-Uma skill pode ter vários arquivos no seu diretório. Mantenha o SKILL.md abaixo de 500 linhas e
+Uma skill pode ter vários arquivos no seu diretório. Mantenha o SKILL.md entre 150 e 300 linhas e
 mova referência detalhada para arquivos irmãos.
 
 ```
 minha-skill/
-  SKILL.md              # Instruções principais (obrigatório, <500 linhas)
+  SKILL.md              # Instruções principais (obrigatório, 150–300 linhas)
   reference.md          # Referência detalhada
   decision.md           # Tabela de decisão / quando usar o quê
   scripts/
@@ -461,8 +514,15 @@ caracteres, independentemente do orçamento.
   `skillListingMaxDescChars`, ou a env `SLASH_COMMAND_TOOL_CHAR_BUDGET` com um número fixo de
   caracteres. Em `skillOverrides`, marcar uma skill como `"name-only"` libera espaço para as outras.
 
-Com 13 skills no projeto, esse orçamento é real e não teórico: uma description de 400 caracteres
-consome o espaço de duas outras.
+Neste projeto o orçamento é ~16.000 caracteres para o conjunto todo. Com ~24 skills isso dá a
+regra dura do [SKILL.md](SKILL.md#arquitetura-o-conjunto-é-um-algoritmo-não-uma-pilha): **450
+caracteres por description**. Não é folga — é a média exata. Uma description de 900 chars não
+custa contexto extra: ela **apaga a de outra skill**, escolhida pela frequência de invocação, sem
+nenhum erro visível.
+
+```bash
+node -e "const fs=require('fs');let t=0;for(const d of fs.readdirSync('.claude/skills')){const p='.claude/skills/'+d+'/SKILL.md';if(!fs.existsSync(p))continue;const m=fs.readFileSync(p,'utf8').match(/^description: (.*)\$/m);if(m)t+=m[1].length}console.log(t,'de 16000')"
+```
 
 ### Skill com `context: fork` devolve nada útil
 
@@ -476,6 +536,43 @@ acionável, não de material de referência. Adicione instrução explícita: "F
 - Argumentos são separados por espaço, com aspas agrupando — sem aspas, um valor com espaço se
   parte em dois.
 - Placeholder posicional sem argumento correspondente fica literal no prompt (`$2` continua `$2`).
+
+---
+
+## Formato do bloco de suposições
+
+Fecha o Modo 1 do [SKILL.md](SKILL.md#passo-0-infira-antes-de-perguntar) e substitui as perguntas
+que não foram feitas. Uma linha por suposição, sempre com a razão e o conserto:
+
+```
+## Suposições
+- Nome `<x>`: derivado de <razão>. Renomeie diretório e campo `name` juntos se mudar.
+- Gatilho: description cobre "<frase>", "<frase>". Se disparar demais, estreite aqui.
+- ENTRADA: assumi <caminho> como fonte. Não existia <alternativa>.
+- Escopo: NÃO cobre <x> — isso é de <outra-skill>.
+```
+
+---
+
+## Formato do relatório de auditoria
+
+A saída do Modo 2 do [SKILL.md](SKILL.md#modo-2--auditar-uma-skill-existente). Os três placares
+são os das três camadas de auditoria; cada reprovação cita o número do teste, a linha e o
+conserto concreto, nunca só o diagnóstico.
+
+```
+## Auditoria: <skill>  (<N> linhas)
+
+Estrutura: <N>/11    Densidade: <N>/8    Fronteira: <N>/3
+
+### Reprovações
+1. [teste 2] linha 84 — "use uma animação suave" → sem código.
+   Conserto: bloco `gsap.to(el, { y: 0, duration: 1, ease: 'expo.out' })`.
+2. [teste 5] 546 linhas → mover "Referência de easing" para `easing.md`.
+
+### Veredito
+<Aprovada | Remendar (≤2 reprovações) | Reescrever (≥3) | Dividir (duas decisões)>
+```
 
 ---
 

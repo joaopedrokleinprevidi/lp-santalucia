@@ -724,8 +724,9 @@ o ponto.
 
 O hook existente (`src/hooks/useMagnetic.ts`) mede o elemento dentro de `pointermove`.
 `getBoundingClientRect()` ali força style + layout síncronos a cada evento, e um mouse de alta
-taxa emite mais de um evento por frame. A versão abaixo mede na entrada, coalesce os eventos em
-um `requestAnimationFrame`, adiciona o press e limpa o transform ao desmontar.
+taxa emite mais de um evento por frame. Ele também não limpa o `transform` no desmonte, então um
+botão que sai da tela inclinado volta inclinado. A versão abaixo mede na entrada, coalesce os
+eventos em um `requestAnimationFrame`, adiciona o press e faz `clearProps` ao desmontar.
 
 A assinatura muda de `useMagnetic(strength)` para `useMagnetic({ strength, press })`.
 `Action.tsx` chama sem argumento e não quebra; toda chamada com número posicional precisa virar
@@ -836,3 +837,165 @@ O `press` fica no hook e não numa classe `active:scale-[0.98]` por uma razão m
 escreve a propriedade `transform` inteira, inline. Enquanto o magnético estiver ativo, qualquer
 `scale`, `translate` ou `rotate` vindo do Tailwind é sobrescrito e simplesmente não acontece.
 Um controle tem um dono de `transform` — aqui é o GSAP.
+
+---
+
+## 11. Tokens do projeto
+
+`src/styles/index.css` já tem `--ease-out-expo` e `--ease-out-quint` no bloco `@theme`. Falta a
+curva de deslocamento, e ela vai no `@theme` porque `--ease-*` é um dos 20 namespaces do
+Tailwind 4 — a variável passa a gerar o utilitário `ease-out-quart`:
+
+```css
+@theme {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  /* Erro de formulário. Sem token, o hex acaba escrito em cinco arquivos diferentes. */
+  --color-danger: #b3261e;
+}
+```
+
+As durações **não** vão no `@theme`. Não existe namespace de `transition-duration` no Tailwind 4,
+então `--dur-*` não geraria utilitário nenhum — e o `@theme` descarta do output as variáveis que
+não viram utilitário nem aparecem no source escaneado. A documentação do Tailwind é explícita:
+`:root` é o lugar de variável que não tem utilitário correspondente.
+
+```css
+/* Fora do @theme — sobrevive ao tree-shaking sem depender do scanner. */
+:root {
+  --dur-press: 90ms;
+  --dur-hover: 180ms;
+  --dur-hover-out: 140ms;
+  --dur-panel: 220ms;
+  --dur-modal: 300ms;
+  --dur-modal-out: 200ms;
+  --dur-toast: 200ms;
+}
+```
+
+Consuma pela forma canônica de variável do Tailwind 4 — `duration-(--dur-hover)`, que é o mesmo
+que `duration-[var(--dur-hover)]` mas é o que o plugin do editor aceita sem aviso — ou direto no
+CSS de componente. Nunca escreva o número solto em dois lugares.
+
+A animação que o `Submit` da [§ 3](#3-botão-em-carregamento) usa vai **dentro** do `@theme`: é
+assim que o Tailwind 4 associa o keyframe ao utilitário `animate-*` e o emite junto com ele.
+
+```css
+@theme {
+  --animate-spinner: spinner 800ms linear infinite;
+
+  @keyframes spinner {
+    to { rotate: 360deg; }
+  }
+}
+```
+
+---
+
+## 12. Par hover / focus-visible em CSS próprio
+
+Em Tailwind 4 o variant `hover:` já compila dentro de `@media (hover: hover)`. Em CSS escrito à
+mão a media query é obrigatória: sem ela, o estado gruda depois do tap em telas de toque e o
+botão fica permanentemente aceso.
+
+```css
+/* src/styles/index.css já define o :focus-visible global (rose-soft, offset 3px).
+   Isto é o par hover/teclado no nível do componente. */
+@layer components {
+  .control {
+    transition:
+      background-color var(--dur-hover) var(--ease-out-quart),
+      box-shadow var(--dur-hover) var(--ease-out-quart),
+      transform var(--dur-hover) var(--ease-out-quart);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .control:hover {
+      box-shadow: var(--shadow-lift);
+      transform: translateY(-1px);
+    }
+  }
+
+  .control:focus-visible {
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-1px);
+  }
+
+  .control:active {
+    transform: scale(0.98);
+    transition-duration: var(--dur-press);
+  }
+}
+```
+
+Em utilitário, o mesmo par:
+
+```
+hover:shadow-lift  hover:-translate-y-px
+focus-visible:shadow-lift  focus-visible:-translate-y-px
+active:scale-[0.98]  active:duration-(--dur-press)
+disabled:opacity-45 disabled:shadow-card disabled:translate-y-0 disabled:cursor-not-allowed
+```
+
+Verificação: os dois conjuntos abaixo têm de sair iguais, tirando magnético, tilt e cursor. O
+prefixo `(?:^|[\s"'`])` existe porque `rg -o "hover:"` casaria dentro de `group-hover:` e
+poluiria a lista; o `-r '$1'` devolve só o utilitário, sem `sed` — que não existe no PowerShell.
+
+```bash
+rg -o "(?:^|[\s\"'\`])hover:([a-z0-9:_-]+(?:\[[^\]]*\])?)" -r '$1' src -I | sort -u
+rg -o "(?:^|[\s\"'\`])focus-visible:([a-z0-9:_-]+(?:\[[^\]]*\])?)" -r '$1' src -I | sort -u
+```
+
+Repita trocando `hover:` por `group-hover:` e `focus-visible:` por `group-focus-visible:` — os
+pares dentro de `group` quebram com a mesma frequência e não aparecem na primeira comparação.
+
+---
+
+## 13. prefers-reduced-motion — o que sobrevive
+
+Deslocamento sai. Opacidade e cor ficam — não movem nada na tela e são elas que carregam a
+informação de mudança de estado.
+
+| Componente | Vira instantâneo | Permanece |
+|---|---|---|
+| botão | `translateY`, `scale`, magnético, ícone que anda | cor de fundo, sombra, anel de foco |
+| card | lift, tilt, `scale` da mídia | borda, sombra, outline |
+| input | shake, subida do label | cor da borda, ícone e texto do erro |
+| link | crescimento do sublinhado | sublinhado presente desde o rest |
+| menu | stagger, `translateY`, `timeScale` | cross-fade de 150ms |
+| modal | `translateY`, escala | cross-fade de 150ms do backdrop e do painel |
+| toast | entrada e saída deslizando | fade de 150ms; permanência inalterada |
+| skeleton | shimmer | bloco cinza estático |
+| spinner | — | continua girando a 1200ms via `[data-motion-safe='spin']` |
+| cursor | tudo | cursor nativo do sistema |
+
+O bloco global em `src/styles/index.css` zera `transition-duration`, `animation-duration` e
+`animation-iteration-count` com `!important` em `*`, `*::before` e `*::after`. É um piso seguro,
+mas leva junto duas coisas que a tabela acima quer manter: os cross-fades de
+150 ms **e o spinner** — com `animation-iteration-count: 1` e duração de 0.001 ms ele para no
+primeiro frame, e o único sinal de progresso indeterminado desaparece. Marque quem sobrevive:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  /* ...o bloco global de `*` que já existe, com os !important... */
+
+  /* Opacidade e cor não deslocam nada, então podem continuar transicionando.
+     Especificidade 0,1,0 vence o `*` do bloco global independente da ordem. */
+  [data-motion-safe='fade'],
+  [data-motion-safe='fade'] * {
+    transition-property: opacity, background-color, border-color, color !important;
+    transition-duration: 150ms !important;
+  }
+
+  /* O giro é o único jeito de dizer "ainda estou processando" sem barra de
+     progresso. Mais lento para reduzir o estímulo, nunca parado. */
+  [data-motion-safe='spin'] {
+    animation-duration: 1200ms !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+```
+
+Em JS, `useReducedMotion()` (`src/hooks/useMediaQuery.ts`) já é reativo via
+`useSyncExternalStore` — use-o em vez de ler `matchMedia` uma única vez, ou o visitante que liga
+a preferência no meio da sessão continua vendo a animação. Em timelines GSAP, prefira
+`gsap.matchMedia()`, que reverte sozinho quando a consulta deixa de bater.

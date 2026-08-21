@@ -20,7 +20,7 @@ número fixo deste catálogo.
 | Padrão | kb | loc | viewports | Dono | Fallback obrigatório |
 |---|---|---|---|---|---|
 | `canvas-frame-sequence` | 2 000–8 000 | 120–160 | 4–6 | `video-to-website` | Poster do frame 1 em `<Picture>`; capítulo vira seção estática empilhada |
-| `scrubbed-currentTime` | 1 000–4 000 | 50–80 | 4–6 | `scroll-video-director` | Poster; o `<video>` nunca é criado |
+| `scrubbed-currentTime` | 1 000–4 000 | 50–80 | 4–6 | `video-decisao` | Poster; o `<video>` nunca é criado |
 | `pinned-chapter-storytelling` | 0 | 60–110 | 4–6 | `gsap-scrolltrigger-expert` | `.chapter { height: auto }` — os beats voltam ao fluxo normal, um abaixo do outro |
 | `horizontal-chapter` | 0 | 70–120 | 5–6 | `gsap-scrolltrigger-expert` | Rail com `flex-wrap: wrap`; os itens empilham e todos ficam alcançáveis |
 
@@ -33,7 +33,7 @@ estática bem legendada, o que se perde? Se a resposta for "atmosfera", use loop
 escolha entre eles não é sua: **`canvas-frame-sequence` é a técnica primária de scrub;
 `scrubbed-currentTime` é o fallback.** Um `currentTime` arbitrário resolve para o keyframe
 anterior, então o scrub gagueja de um jeito que nenhum ajuste de JS conserta. Aloque a faixa e
-o KB no plano; quem decide qual das duas é `scroll-video-director`, pela árvore em
+o KB no plano; quem decide qual das duas é `video-decisao`, pela árvore em
 `video-to-website/decision.md`.
 
 ## Medium — 2 (★★★★☆) ou 2–3 (★★★★★), separados do major por ao menos um capítulo
@@ -48,7 +48,7 @@ separação — o que a regra proíbe são dois momentos **distintos** colados.
 | `rail-steps` | 0 | 45–70 | 3–5 | `gsap-scrolltrigger-expert` | Cartões empilham em coluna; thread e contador somem (`[data-progress-row] { display: none }`) |
 | `cycle-replace` | 0 | 30–50 | 3–5 | `gsap-scrolltrigger-expert` | Os N estados viram uma lista visível de uma vez |
 | `card-stacking` | 0 | 40–60 | 3–4 | `gsap-scrolltrigger-expert` | Cartões em grade normal |
-| `background-loop-film` | 300–1 500 | 20–40 | 0 | `scroll-video-director` | `<Picture>` do poster; o `<video>` nunca é criado |
+| `background-loop-film` | 300–1 500 | 20–40 | 0 | `video-decisao` | `<Picture>` do poster; o `<video>` nunca é criado |
 | `background-color-handoff` | 0 | 15–25 | 1–2 | `gsap-scrolltrigger-expert` | Cada capítulo com a sua cor final, sem transição |
 | `veil-close` | 0 | 10–20 | 1 | `gsap-scrolltrigger-expert` | Veil na opacidade final |
 
@@ -144,7 +144,7 @@ página, não um recurso.
 ## Custos que não aparecem na tabela
 
 - **Um major atrasa o resto do projeto**, não só o download. Trate `viewports` e `loc` como
-  piso, e reserve uma passada extra de `responsive-e-acessibility` só para ele.
+  piso, e reserve uma passada extra de `audit-acessibilidade` só para ele.
 - **Cada rendição de vídeo dobra o trabalho de encoding** e a superfície de bug (desktop e
   mobile divergindo). `scripts/prepare-assets.mjs` já gera as duas — o custo é revisar as duas.
 - **Todo padrão com `N` itens** cresce em pontos junto com o conteúdo. Um rail que nasce com 5

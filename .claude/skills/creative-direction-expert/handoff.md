@@ -4,15 +4,16 @@ O que sai desta direção, para quem vai, e o que volta.
 
 ## Fronteiras
 
-`landing-storytelling-director` decide **a ordem dos capítulos, o beat emocional e o `share` de
-scroll de cada um**, e converte `share` em `scroll` / `scrollMobile` pela sua própria função
-`scrollProp()`. Ela é a dona desses números.
+`estrutura-secoes` decide **a ordem dos capítulos, o beat emocional e o `share` de scroll de cada
+um**, e converte `share` em `scroll` / `scrollMobile` pela sua própria função `scrollProp()`. Ela
+é a dona desses números. `copy-conversao` escreve o texto dentro dessa estrutura.
 
-A direção criativa entrega a essa skill, na passada 1, apenas **o `depth` total e a posição do
-pico na curva** — não um `scroll` por capítulo. Na passada 2 ela lê o story map pronto, atribui a
-`band` pela posição medida do meio de cada capítulo, e decide **quantos pontos e quais WOW cabem
-ali**. Se um capítulo estourar o teto de pontos da sua band, corte pontos ou devolva o capítulo
-para o storytelling repartir o `share` — nunca estique o `scroll` por conta própria.
+A direção criativa entrega a `estrutura-secoes`, na passada 1, apenas **o `depth` total e a
+posição do pico na curva** — não um `scroll` por capítulo. Na passada 2 ela lê o story map
+pronto, atribui a `band` pela posição medida do meio de cada capítulo, e decide **quantos pontos
+e quais WOW cabem ali**. Se um capítulo estourar o teto de pontos da sua band, corte pontos ou
+devolva o capítulo para `estrutura-secoes` repartir o `share` — nunca estique o `scroll` por
+conta própria.
 
 A tabela de calibração no SKILL.md repete `scroll` e `scrollMobile` do story map só para as
 colunas de ponto e faixa terem contra o que ser lidas. Divergiu? A do story map vence.
@@ -23,6 +24,57 @@ que já escolheu `power3.out` invadiu o território errado.
 
 `product-design-expert` decide **como a cena parece parada**. Se um capítulo não funciona
 parado, nenhum orçamento de motion conserta — devolva para lá antes de alocar pontos.
+
+## O contrato do artefato
+
+```ts
+// design/creative-direction.d.ts
+export type Tier = 'major' | 'medium' | 'small'
+export type Band = 'abertura' | 'escalada' | 'plato' | 'pico' | 'fecho'
+
+export interface WowMoment {
+  /** Ids de src/data/story.ts. Device repetido é UMA entrada com N capítulos: é assim que o
+   *  visitante percebe, e é assim que ele ocupa uma vaga só na contagem do Score. */
+  chapters: readonly string[]
+  tier: Tier
+  /** Nome do momento no catálogo — ver wow-catalog.md. */
+  pattern: string
+  /** Declarado antes de implementar, para poder ser cobrado depois. `viewports` não se
+   *  soma entre dois momentos do mesmo capítulo: o capítulo tem um orçamento de scroll só. */
+  cost: { kb: number; loc: number; viewports: number }
+  /** Obrigatório. O que a cena vira sob prefers-reduced-motion, em uma frase concreta. */
+  fallback: string
+  /** Especialista que implementa. Ver a tabela de delegação abaixo. */
+  owner: string
+}
+
+export interface ChapterPlan {
+  id: string
+  band: Band
+  /** Viewports além do primeiro screen. Vem do story map, não é decidido aqui. */
+  scroll: number
+  /** Do story map, entre 0,68 e 0,75 × scroll. */
+  scrollMobile: number
+  /** Soma pela tabela de pontos de complexidade do SKILL.md. */
+  points: number
+  /** Diferente do capítulo anterior; no máximo duas vezes na página. */
+  entrance: string
+  /** true quando points <= 5, scroll <= 3.2 e não há WOW próprio aqui. */
+  silence: boolean
+  /** Uma frase: o que o visitante perde se este capítulo não animar. */
+  roi: string
+}
+
+export interface CreativeDirection {
+  experienceScore: 1 | 2 | 3 | 4 | 5
+  rationale: string
+  /** Soma de (1 + scroll) de todos os capítulos. */
+  depth: number
+  budget: { pointsTotal: number; mediaDesktopMB: number; mediaMobileMB: number; eagerMB: number }
+  chapters: ChapterPlan[]
+  wow: WowMoment[]
+}
+```
 
 ## `design/creative-direction.json` — a página de referência, preenchida
 
@@ -67,7 +119,7 @@ parado, nenhum orçamento de motion conserta — devolva para lá antes de aloca
     { "tier": "medium", "chapters": ["inicio", "consulta", "cuidado"], "pattern": "background-loop-film",
       "cost": { "kb": 11157, "loc": 38, "viewports": 0 },
       "fallback": "Nenhum elemento <video> é criado; cada capítulo carrega o poster responsivo no lugar.",
-      "owner": "scroll-video-director" }
+      "owner": "video-decisao" }
   ]
 }
 ```
@@ -98,32 +150,61 @@ inteiro.
 
 | Especialista | Recebe deste plano | Precisa devolver |
 |---|---|---|
-| `landing-storytelling-director` | Da passada 1: `experienceScore`, `depth` total e em que posição da curva o pico cai | Ordem final, copy por capítulo, `share` → `scroll` / `scrollMobile`, posição dos CTAs |
+| `estrutura-secoes` | Da passada 1: `experienceScore`, `depth` total e em que posição da curva o pico cai | Ordem final, `share` → `scroll` / `scrollMobile`, posição dos CTAs |
+| `copy-conversao` | Nada deste plano além do número de capítulos | Copy por capítulo dentro dos tetos de caractere |
 | `product-design-expert` | `chapters[].band` e `points` | Composição de cada capítulo funcionando **parada**, escala tipográfica, contraste medido |
 | `landing-motion-expert` | O plano inteiro | Linguagem de motion (duração, ease, stagger, distância) e o roteamento para os especialistas abaixo |
 | `gsap-scrolltrigger-expert` | `chapters[].scroll`, `scrollMobile`, `entrance`, e os `wow` cujo `owner` é ele | Timelines por capítulo dentro do orçamento de viewports declarado |
-| `scroll-video-director` | Os `wow` de vídeo, `budget.mediaDesktopMB`, `mediaMobileMB`, `eagerMB` | Renditions transcodadas, poster, gating por `IntersectionObserver` |
+| `video-decisao` | Os `wow` de vídeo e o papel narrativo de cada clipe | Técnica por seção: loop, canvas frames ou scrub, e o que vira foto |
+| `video-encode` | `budget.mediaDesktopMB`, `mediaMobileMB`, `eagerMB` | Renditions transcodadas, poster, gating por `IntersectionObserver` |
 | `video-to-website` | Apenas um `wow` de `pattern: "canvas-frame-sequence"` | Sequência de frames dentro do orçamento de KB declarado |
 | `motion-ui-expert` | A lista de smalls por capítulo | Estados de componente, sem tocar em scroll |
-| `responsive-e-acessibility` | Todo `fallback` do array `wow` | Confirmação de que cada fallback existe no código e foi visto rodando |
+| `audit-responsivo` e `audit-acessibilidade` | Todo `fallback` do array `wow` | Confirmação de que cada fallback existe no código e foi visto rodando |
 
 ## O que cobrar de volta
 
 A direção não termina no handoff. Depois da implementação, três números precisam bater com o
 JSON — e é a mesma direção que cobra:
 
-1. `sum(1 + scroll)` no código bate com `depth` (±1 viewport).
-2. Os pontos contados no código bate com `chapters[].points` (±2 por capítulo). Um capítulo que
+1. `sum(1 + scroll)` no código bate com `depth` (±1 viewport). Em runtime:
+   `document.body.scrollHeight / window.innerHeight`.
+2. Os pontos contados no código batem com `chapters[].points` (±2 por capítulo). Um capítulo que
    cresceu 4 pontos durante a implementação saiu da sua band sem ninguém decidir isso.
-3. O peso das renditions bate com `budget`. Meça, não pergunte — `node`, porque `-printf` é
-   extensão do GNU find e não existe no `find` do Windows:
+3. O peso das renditions bate com `budget`. Meça, não pergunte.
+
+Os três comandos usam `node` porque `-printf` é extensão do GNU find e não existe no `find` do
+Windows, que é a máquina onde estes projetos rodam.
 
 ```bash
+# 1. Comparação grosseira de complexidade entre capítulos.
+# Conta tweens e reveals, NÃO conta pontos: um tween dentro de um forEach de 5 cartões
+# aparece 1 aqui e são 5 no runtime. Número alto pede recontagem à mão pela tabela do SKILL.md.
+node -e "
+const fs = require('fs'), dir = 'src/components/chapters';
+for (const f of fs.readdirSync(dir)) {
+  const s = fs.readFileSync(dir + '/' + f, 'utf8');
+  const tweens = (s.match(/\.(from|fromTo|to)\(/g) ?? []).length;
+  const reveals = (s.match(/select:/g) ?? []).length;
+  console.log(f.padEnd(26), 'tweens', tweens, 'reveals', reveals);
+}"
+
+# 2. Razão mobile/desktop de cada capítulo — precisa ficar entre 0.68 e 0.75.
+node -e "
+const fs = require('fs'), dir = 'src/components/chapters';
+for (const f of fs.readdirSync(dir)) {
+  const s = fs.readFileSync(dir + '/' + f, 'utf8');
+  const d = s.match(/scroll=\{([\d.]+)\}/), m = s.match(/scrollMobile=\{([\d.]+)\}/);
+  if (d && m) console.log(f.padEnd(26), d[1], m[1], (m[1] / d[1]).toFixed(2));
+}"
+
+# 3. Peso por rendição — compare com budget.mediaDesktopMB / mediaMobileMB.
 node -e "
 const fs = require('fs'), p = 'public/media';
 const rows = fs.readdirSync(p).filter(f => f.endsWith('.mp4'))
   .map(f => [fs.statSync(p + '/' + f).size, f]).sort((a, b) => b[0] - a[0]);
-for (const [s, f] of rows) console.log((s / 1e6).toFixed(2).padStart(6), 'MB', f);"
+for (const [s, f] of rows) console.log((s / 1e6).toFixed(2).padStart(6), 'MB', f);
+const sum = t => (rows.filter(r => r[1].includes(t)).reduce((a, r) => a + r[0], 0) / 1e6).toFixed(2);
+console.log('desktop', sum('-desktop'), 'MB / mobile', sum('-mobile'), 'MB');"
 ```
 
 Divergência não é falha de quem implementou — é uma decisão criativa tomada por acidente. Ou o

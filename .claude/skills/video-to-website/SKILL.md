@@ -6,6 +6,16 @@ argument-hint: [caminho-do-video] [nome-da-secao]
 
 # Video to Scroll-Driven Website
 
+| | |
+|---|---|
+| **ENTRADA** | as linhas `canvas frames` de `design/video-plan.md` (capítulo, duração de origem, alvo); o clipe correspondente em `design/renders/NN-secao.mp4` ou `assets-source/*.mp4`; `design/creative-direction.json` (`budget.mediaDesktopMB` / `mediaMobileMB`) e `design/design-system.json` (cor e tipo) |
+| **SAÍDA** | `public/frames/<capitulo>/frame_%04d.webp` nos dois sets (1920 e 1280), a contagem de frames em `src/generated/media.ts`, o componente de canvas e o último frame congelado como poster de `prefers-reduced-motion` |
+| **ANTES** | quem chama é `video-decisao`, uma linha de plano por vez, e só para `canvas frames`. `landing-motion-expert` (Fase 10c) roteia primeiro para `video-decisao`, nunca direto para cá — a escolha da técnica é irreversível depois da extração |
+| **DEPOIS** | `gsap-scrolltrigger-expert` liga o progresso do capítulo ao índice do frame; `audit-performance` (Fase 11c) pesa `public/frames/` contra o orçamento de mídia |
+
+Fora do trilho linear: esta skill não tem uma fase própria. Ela é a implementação de uma linha
+`canvas frames` do plano de vídeo — sem essa linha, não roda.
+
 Scroll becomes the timeline. The user is not watching a video — they are *moving* it.
 
 This skill covers the **canvas frame-sequence** technique: the video is decoded once into
@@ -197,8 +207,8 @@ copy will register a second, conflicting ScrollTrigger instance.
 
 ## AI-generated footage (Google Flow / Veo / Runway)
 
-This is the intended pipeline here: `brand-dna-extractor` → `ai-visual-prompt-director` →
-GPT still per section → Flow animates it → this skill turns the clip into scroll.
+This is the intended pipeline here: `brand-dna-extractor` → `prompt-imagem` → GPT still per
+section → `prompt-animacao` → Flow animates it → this skill turns the clip into scroll.
 
 Flow output needs different handling than filmed footage:
 

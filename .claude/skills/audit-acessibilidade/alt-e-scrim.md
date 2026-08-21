@@ -1,6 +1,6 @@
-# Alt text, contraste sobre mídia e conexão lenta
+# Alt text e contraste sobre mídia
 
-Apoio do [SKILL.md](SKILL.md). Passos A6, A7 e A8 do protocolo.
+Apoio do [SKILL.md](SKILL.md). Passos A3 (nomes acessíveis) e A4 (contraste).
 
 ## Alt text
 
@@ -32,7 +32,7 @@ Escreva em pt-BR, com ponto final — o ponto faz o leitor de tela pausar.
 | **Equipe** | `alt="equipe"` · `alt="nossa equipe profissional e acolhedora"` | `alt="As cinco profissionais da clínica, de jaleco branco, na recepção."` | Quantas pessoas, o que vestem, onde estão. Se a legenda visível já nomeia cada uma, o alt vira `""` |
 | **Profissional em ação** | `alt="atendimento"` | `alt="Profissional da Beleza Completa avaliando o rosto de uma paciente."` | É o padrão que o `src/data/site.ts` já usa. Copie o formato |
 | **Fachada** | `alt="fachada da clínica"` | `alt="Fachada da clínica na Rua Honório Hermeto, com letreiro iluminado e porta de vidro no nível da calçada."` | Foto de fachada existe para alguém **reconhecer o lugar da calçada**. O alt precisa carregar as pistas de reconhecimento — letreiro, cor, esquina, nível da rua — e não a palavra "fachada" |
-| **Ambiente / sala** | `alt="recepção"` | `alt="Recepção da clínica Beleza Completa, com poltronas claras, iluminação suave e o letreiro da marca."` | Já em produção. Três atributos concretos bastam para a pessoa montar a cena |
+| **Ambiente / sala** | `alt="recepção"` | `alt="Recepção da clínica Beleza Completa, com poltronas claras, iluminação suave e o letreiro da marca."` | Três atributos concretos bastam para a pessoa montar a cena |
 | **Antes e depois** | `alt="antes e depois"` | `alt="Antes e depois de harmonização facial: à esquerda, sulcos marcados ao redor da boca; à direita, contorno suavizado."` | Sem dizer o que mudou, a imagem não comunica nada a quem não vê. O aviso de "resultados variam" é texto na página, nunca dentro do alt |
 | **Poster de vídeo** | `alt="vídeo"` · `alt=""` | `alt="Aplicação de procedimento estético facial com técnica precisa."` | Sob reduced motion o vídeo **nunca é montado** e o poster é tudo que existe. Descreva o clipe, não o frame |
 | **Passo numerado** | `alt="passo 3"` | `alt=""` + o número e o título como texto ao lado | O número já é texto; repetir é ruído |
@@ -42,9 +42,9 @@ Escreva em pt-BR, com ponto final — o ponto faz o leitor de tela pausar.
 ## Texto sobre vídeo
 
 A armadilha: o contraste é medido contra o **pixel mais claro que o texto pode cobrir**, em
-qualquer frame e em qualquer recorte de viewport. Um verificador que amostra um screenshot
-aprova uma página que reprova três segundos depois. O poster é o pior lugar possível para medir
-— ele foi escolhido a dedo justamente por ser bonito.
+qualquer frame e em qualquer recorte de viewport. Um verificador que amostra um screenshot aprova
+uma página que reprova três segundos depois. O poster é o pior lugar possível para medir — ele foi
+escolhido a dedo justamente por ser bonito.
 
 ### Quanto scrim
 
@@ -111,54 +111,11 @@ function brightestUnder(textEl: HTMLElement, video: HTMLVideoElement): [number, 
 ```
 
 Rode `brightestUnder` em pelo menos cinco posições do clipe (`video.currentTime = d * k / 4`,
-`k = 0..4`), em 390×844 e em 1440×900 — o recorte de `object-fit: cover` muda com a proporção, e
-a região sob o texto muda com ele. Pegue o pior resultado, compare com `scrimAlpha` e confira
-contra a opacidade real do gradiente naquela posição.
+`k = 0..4`), em 390×844 e em 1440×900 — o recorte de `object-fit: cover` muda com a proporção, e a
+região sob o texto muda com ele. Pegue o pior resultado, compare com `scrimAlpha` e confira contra
+a opacidade real do gradiente naquela posição.
 
 **Reprova se** o alpha necessário no pior frame é maior que o alpha aplicado ali.
 
 Se o scrim necessário fica tão escuro que apaga a fotografia, o problema não é o scrim: é a copy
 estar no lugar errado do quadro. Mova o texto para onde a imagem já é escura.
-
-## Conexão lenta e WebViews
-
-O público chega por WhatsApp e Instagram, quase sempre em Android de entrada, quase sempre em
-rede móvel. O que isso muda, concretamente:
-
-- **Cada visita é fria.** A WebView do Instagram tem cache próprio, isolado do Chrome. Nada do
-  que o navegador do aparelho já baixou ajuda. O primeiro carregamento é o único carregamento.
-- **`saveData` existe e ninguém checa.** Trate como reduced motion — o vídeo não é montado.
-  `navigator.connection` não é padronizado e não existe no Safari, então o tipo é declarado à
-  mão e a ausência significa "sem restrição":
-
-  ```ts
-  type NetInfo = { saveData?: boolean; effectiveType?: string }
-
-  /** Lido uma vez por montagem. `connection` só emite `change`, e nem sempre —
-      não vale um `useSyncExternalStore` como o de `useReducedMotion`. */
-  export function useDataSaver(): boolean {
-    return useMemo(() => {
-      const c = (navigator as Navigator & { connection?: NetInfo }).connection
-      return Boolean(c?.saveData) || /^(slow-)?2g$/.test(c?.effectiveType ?? '')
-    }, [])
-  }
-  ```
-
-  Em `ChapterFilm`, o mesmo caminho do poster: `if (reducedMotion || dataSaver) return <Picture …>`.
-  1,0–1,3 MB por capítulo é o custo real do vídeo mobile deste projeto; três capítulos são 3,5 MB
-  que alguém paga por megabyte.
-- **A barra do app não retrai.** Dentro da WebView do Instagram há uma barra fixa acima da
-  página. `100vh` conta com a retração que nunca vem — `100svh` é o único valor honesto.
-- **Autoplay pode ser recusado.** Em WebView de iOS, `video.play()` rejeita mesmo com `muted` +
-  `playsInline`. O `.catch()` precisa deixar o poster como estado final aceitável, não como
-  placeholder eterno — é o que `ChapterFilm` faz com `.catch(() => setIsReady(true))`.
-- **A prévia do WhatsApp tem teto.** `og:image` acima de ~300 KB não é renderizada e o link chega
-  sem imagem. Verifique: `du -h public/media/og-image.jpg`. Hoje: 64 KB.
-- **Orçamento de LCP.** Alvo ≤ 2.5s sob o throttling móvel que o Lighthouse aplica por padrão
-  (150 ms RTT, 1,6 Mbps de descida, CPU 4×). Meça sempre no build de `npm run preview`: o dev
-  server do Vite não tem bundle nem minificação, e o número que ele dá não existe em produção.
-  O candidato a LCP aqui é o poster do hero, pré-carregado do `<head>` com `imagesrcset` em AVIF.
-  Se alguém trocar o LCP por um `<video>`, a métrica piora: o navegador não considera o primeiro
-  quadro de vídeo tão cedo quanto uma imagem decodificada.
-- **CLS.** Toda `<img>` com `width`/`height` do manifesto. O `Picture` deste projeto já passa os
-  dois a partir de `ResponsiveImage`; qualquer `<img>` escrita à mão fora dele é regressão.

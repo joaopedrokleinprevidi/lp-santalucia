@@ -1,7 +1,7 @@
 # Stack — Next.js App Router
 
-Referência técnica das **Fases 5 e 7** do [SKILL.md](SKILL.md). O que rodar, onde cada arquivo
-mora, e o código que não se escreve de memória.
+Referência técnica das **Fases 10 e 12** do [SKILL.md](SKILL.md) — implementação e deploy. O que
+rodar, onde cada arquivo mora, e o código que não se escreve de memória.
 
 O projeto de referência deste repositório (`belezacompletabarreiro`) é **Vite + React**. A
 factory adota **Next.js App Router** como padrão por um motivo só: `metadata`, JSON-LD, sitemap
@@ -32,8 +32,22 @@ armadilhas.
 
 ## 1. Estrutura de pastas
 
+A pasta do projeto é a **mesma** desde a Fase 0. As Fases 0 a 4 escreveram `design/`,
+`scripts/` e `assets-source/` dentro dela; o scaffold da §2 roda no fim da Fase 5 e cria `src/`
+e `app/`; as Fases 6a e 6b já gravam em `src/data/`; a Fase 10 acrescenta o resto, no mesmo lugar.
+
 ```
-<slug>/
+<slug>/                          ← a pasta em que o pipeline roda desde a Fase 0
+├─ design/                       Fases 0–8: briefing.json, lacunas.md, design-system.json,
+│  │                             pesquisa.md, creative-direction.json, landing-blueprint.md,
+│  │                             image-prompts.md, motion-prompts.md
+│  └─ renders/                   Fase 9: NN-id-secao.png e .mp4 gerados pelo dev
+├─ assets-source/                material cru do cliente + entrada do pipeline — FORA do repo
+├─ assets/fonts/                 .ttf lido pelo opengraph-image no build — DENTRO do repo
+├─ scripts/
+│  ├─ asset-inventory.mjs        Fase 1
+│  ├─ check-banned-copy.mjs      Fases 4 e 6
+│  └─ prepare-assets.mjs         Fase 10
 ├─ src/
 │  ├─ app/
 │  │  ├─ layout.tsx            server — metadata, viewport, <html lang="pt-BR">, fontes
@@ -59,10 +73,13 @@ armadilhas.
 │  ├─ media/                   derivados AVIF/WebP/MP4, com hash no nome
 │  ├─ frames/<secao>.<hash>/   frame_0001.webp … (canvas frame sequence)
 │  └─ favicon.svg, apple-touch-icon.png
-├─ assets-source/              originais do cliente — fora do build, no .gitignore se pesados
-├─ scripts/prepare-assets.mjs
 ├─ next.config.ts, postcss.config.mjs, tsconfig.json, vercel.json
 ```
+
+`assets-source/` guarda os originais pesados e fica **fora** do repositório (está no
+`.gitignore`); `public/media/` e `public/frames/`, que são os derivados leves com hash no nome,
+**entram** no repositório. Inverter os dois é o erro que mais derruba o deploy — veja
+[publicar-lp](../publicar-lp/SKILL.md) §1, checagem 2.
 
 A divisão de `components/` é a mesma do referência de propósito: `chapters/` são as unidades
 narrativas (uma por seção do blueprint), `ui/` são as peças reutilizadas entre elas, `media/`
@@ -79,9 +96,13 @@ portar do referência, apague os dois estáticos.
 
 ## 2. Scaffold
 
+Roda **no fim da Fase 5**, não na 10. A Fase 6a grava `src/data/story.ts` e a 6b grava
+`src/data/site.ts`; `create-next-app` aborta numa pasta que já contém `src/`, então rodá-lo
+depois da 6a obriga a apagar e reescrever os dois arquivos.
+
 ```bash
-npx create-next-app@latest <slug> --typescript --tailwind --app --src-dir --import-alias "@/*" --eslint
-cd <slug>
+# Ponto final: cria o projeto DENTRO da pasta que já existe, sem aninhar um <slug>/<slug>/.
+npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias "@/*" --eslint
 npm i gsap lenis lucide-react
 npm i -D sharp ffmpeg-static ffprobe-static @types/node
 ```
@@ -97,6 +118,27 @@ npm i -D sharp ffmpeg-static ffprobe-static @types/node
 | `ffmpeg-static` | dev | Transcode desktop/mobile e extração de frames WebP. Binário via npm — **nunca** instale ffmpeg global nem escreva caminho fixo, é a origem clássica do pipeline que "funciona aqui" |
 | `ffprobe-static` | dev | Duração e fps reais do master, para dimensionar o orçamento de frames |
 | `typescript`, `@types/node` | dev | TS 5.9. `@types/node` é obrigatório: os scripts do pipeline usam `node:fs/promises` |
+
+O `.` importa. `create-next-app <slug>` criaria um subdiretório novo, e `design/`, `scripts/` e
+`assets-source/` — escritos pelas Fases 0 a 4 — ficariam no diretório **de cima**, fora do
+projeto e fora do repositório. Os caminhos de `design/renders/` param de resolver, o pipeline de
+assets não acha as mídias, e o `npm run build` passa mesmo assim. O comando avisa se a pasta tem
+arquivos conflitantes (`package.json`, `app/`); `design/` e `assets-source/` não conflitam.
+
+Registre o pipeline no `package.json` no mesmo momento em que criar o script, ou `npm run assets`
+responde `Missing script: assets` na primeira vez que alguém precisar dele — inclusive o você de
+daqui a seis meses, seguindo o próprio README:
+
+```jsonc
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "typecheck": "tsc --noEmit",
+  "assets": "node scripts/prepare-assets.mjs"
+}
+```
 
 `postcss.config.mjs`:
 
@@ -263,6 +305,8 @@ export const contentType = 'image/png'
 // Lidos uma vez, no escopo do módulo: nada aqui depende da requisição.
 // O satori não lê woff2 — precisa ser ttf, otf ou woff, e com os glifos
 // acentuados dentro. Uma fonte só-latin escreve "Estética" como "Est tica".
+// assets/fonts/ é versionado — NÃO confunda com assets-source/, que está no .gitignore.
+// Este arquivo é lido no build da Vercel; fora do repositório, o build quebra em ENOENT.
 const displayFont = await readFile(join(process.cwd(), 'assets/fonts/Display-600.ttf'))
 const photo = await readFile(join(process.cwd(), 'public/media/og-image.jpg'))
 
@@ -484,7 +528,7 @@ export default function robots(): MetadataRoute.Robots {
 ```
 
 Gerados, e não estáticos, por um motivo prático: ambos carregam a URL do site. Quando o
-domínio próprio entra na Fase 7, uma variável muda e os dois acompanham. Em arquivo estático,
+domínio próprio entra na Fase 12, uma variável muda e os dois acompanham. Em arquivo estático,
 alguém esquece o `sitemap.xml` apontando para o `.vercel.app` e o Google indexa o endereço errado.
 
 ### Por que não tem ISR nem rota dinâmica
@@ -813,6 +857,24 @@ o hook `useGSAP` embrulha `gsap.context()`, o cleanup e a troca isomórfica de l
 
 ## 6. Pipeline de assets
 
+### Primeiro passo da Fase 10: recolher as mídias da Fase 9
+
+O dev salvou tudo em `design/renders/`. O pipeline lê `assets-source/`. Junte os dois **antes**
+de rodar qualquer coisa, ou o pipeline emite um manifest sem as imagens geradas e as seções
+sobem vazias:
+
+```bash
+mkdir -p assets-source
+cp design/renders/*.png design/renders/*.mp4 assets-source/ 2>/dev/null
+ls assets-source/            # confira: uma linha por seção que o image-prompts.md pediu
+```
+
+Cópia, não movimentação: `design/renders/` continua sendo o registro do que o dev aprovou, e é
+contra ele que o checklist do [handoff-imagens.md](handoff-imagens.md) é reconferido se uma seção
+voltar a ficar errada. As fotos reais do cliente já estão em `assets-source/` desde a Fase 0.
+
+### O script
+
 `scripts/prepare-assets.mjs` do referência migra **sem alteração de lógica** — ele já lê
 `assets-source/`, escreve em `public/media/` e emite um manifest tipado. Só mudam dois
 caminhos: `MANIFEST` passa a apontar para `src/generated/media.ts` (que no Next continua sendo
@@ -945,10 +1007,13 @@ o `Picture`, o preload é o `<link>` explícito do `layout.tsx` e o problema nã
 ## 8. Deploy na Vercel
 
 ```bash
-gh repo create <owner>/<repo> --public --source . --remote origin --push
+gh repo create <owner>/lp-<slug> --private --source . --remote origin --push
 vercel link          # associa a pasta a um projeto; aceite os padrões
 vercel --prod        # primeira publicação
 ```
+
+Privado é o padrão da fábrica, e o pré-voo de segredos e de dado pessoal roda **antes** do
+primeiro `git add`. O procedimento completo está em [publicar-lp](../publicar-lp/SKILL.md) §1.
 
 `vercel.json`:
 

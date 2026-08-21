@@ -1,11 +1,21 @@
 # CTA e FAQ — implementação
 
-Complemento de [SKILL.md](SKILL.md). A decisão de *quantos* CTAs e *onde* está lá; aqui está o
-código que a executa.
+Complemento de [SKILL.md](SKILL.md). A decisão de *quantos* CTAs, *onde* e *o que eles dizem* está
+lá; aqui está o código que a executa.
 
 ## Barra sticky de WhatsApp
 
-Aparece a partir do share definido pelo arquétipo e some no capítulo de convite.
+Aparece a partir do share definido pelo arquétipo — pixel 0 em Urgência, 30% em Transformação,
+25% em Credencial e Produto — e some no capítulo de convite.
+
+| Situação | Sticky? | Causa |
+|---|---|---|
+| Urgência, mobile | Sim, desde o pixel 0 | A decisão pode ser tomada na primeira frase; esconder o botão custa a conversão inteira |
+| Transformação, mobile | Só depois de 30% do scroll | Antes disso o visitante ainda não quer nada; a barra come 72px de tela durante justamente a leitura que criaria a vontade |
+| Credencial / Produto, mobile | Depois de 25% | O visitante ainda está avaliando; a barra vira ruído sobre a avaliação |
+| Qualquer arquétipo, ≥ 1024px | Não | O header já está sempre visível. Uma segunda barra pede a mesma coisa duas vezes |
+| Capítulo final na tela | Some | Dois pedidos idênticos na mesma tela cancelam-se |
+| Sobre campo de input | Nunca | O teclado mobile sobe e a barra tapa o campo que está sendo preenchido |
 
 ```tsx
 // src/hooks/useStickyCta.ts
@@ -92,13 +102,11 @@ export function StickyCta({ revealAt = 0.3 }: { revealAt?: number }) {
 }
 ```
 
-`lg:hidden` não é estilo, é a regra: em ≥ 1024px o header já está sempre visível e uma segunda
-barra pede a mesma coisa duas vezes.
+`lg:hidden` não é estilo, é a regra: em ≥ 1024px o header já está sempre visível.
 
 ## Pareamento de variantes
 
-`src/components/ui/Action.tsx` já tem as três variantes. A escolha depende do fundo, não do
-gosto:
+`src/components/ui/Action.tsx` já tem as três variantes. A escolha depende do fundo, não do gosto:
 
 | Fundo do capítulo | Primário | Secundário |
 |---|---|---|
@@ -166,8 +174,8 @@ export function Faq({ items }: { items: readonly FaqItem[] }) {
 }
 ```
 
-O `<h3>` dentro do `<summary>` mantém o FAQ na navegação por cabeçalhos — é assim que uma
-landing longa é lida sem ver a tela. O capítulo que contém o FAQ já usa `<h2>`.
+O `<h3>` dentro do `<summary>` mantém o FAQ na navegação por cabeçalhos — é assim que uma landing
+longa é lida sem ver a tela. O capítulo que contém o FAQ já usa `<h2>`.
 
 ## JSON-LD
 
@@ -192,18 +200,17 @@ const faqJsonLd = {
 ```
 
 Para serviço local o `LocalBusiness` pesa mais que o `FAQPage`: ele é o que faz o telefone, o
-endereço e o horário aparecerem no resultado de busca. No projeto de referência ele **já existe
-e não fica em componente nenhum** — é um bloco `application/ld+json` escrito à mão no `<head>`
-de `index.html`, com `@type: "BeautySalon"` (subtipo de `LocalBusiness`, mais específico) e
+endereço e o horário aparecerem no resultado de busca. No projeto de referência ele **já existe e
+não fica em componente nenhum** — é um bloco `application/ld+json` escrito à mão no `<head>` de
+`index.html`, com `@type: "BeautySalon"` (subtipo de `LocalBusiness`, mais específico) e
 `openingHoursSpecification`. Ao mudar horário ou endereço, edite os dois lados: `index.html` e
-`openingHours` de `src/data/site.ts`, que carrega os mesmos tokens (`Monday`, `opens`,
-`closes`) para a UI. Divergência entre os dois é o Google anunciando um horário que a página
-desmente.
+`openingHours` de `src/data/site.ts`, que carrega os mesmos tokens (`Monday`, `opens`, `closes`)
+para a UI. Divergência entre os dois é o Google anunciando um horário que a página desmente.
 
 ## Origem da mensagem — taxonomia completa
 
-Uma origem por posição de CTA, nunca uma genérica reaproveitada. O valor está em o atendente
-saber qual objeção já caiu.
+Uma origem por posição de CTA, nunca uma genérica reaproveitada. O valor está em o atendente saber
+qual objeção já caiu.
 
 | Origem | Onde | O que o atendente aprende |
 |---|---|---|

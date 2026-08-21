@@ -563,3 +563,67 @@ chega.
 **Custo.** Dois nós DOM por palavra. Uma headline de 12 palavras = 24 nós, uma máscara com
 `overflow: hidden` cada. `filter: blur` durante a subida força camada própria — por isso o
 `clearProps` no fim.
+
+---
+
+## Esqueleto de matchMedia
+
+O envelope de toda receita acima. Três condições, sempre as mesmas: desktop com movimento,
+mobile com movimento, e nenhum branch para `reduce` — sob reduced motion nenhuma condição casa,
+nada é criado e nada é escrito no DOM.
+
+```ts
+const mm = gsap.matchMedia(scope)
+
+mm.add(
+  {
+    desktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+    mobile: '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
+  },
+  (context) => {
+    const { desktop } = context.conditions as { desktop: boolean; mobile: boolean }
+
+    gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: scope,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    }).fromTo('[data-bg]', { yPercent: desktop ? -12 : -6 }, { yPercent: desktop ? 12 : 6 }, 0)
+  },
+)
+
+return () => mm.revert()
+```
+
+Desktop e mobile no mesmo tween, com o travel do mobile pela metade — duas chamadas separadas
+duplicam o trigger e as duas versões coexistem no resize. `mm.revert()` no cleanup é o que
+impede o Strict Mode do React 19 de deixar um trigger órfão por montagem.
+
+---
+
+## Tabela de sintoma e causa
+
+Ler depois de ligar `markers: true` e conferir os quatro marcadores na tela.
+
+| Sintoma | Causa |
+|---|---|
+| Dispara uma tela cedo ou tarde | `trigger` é o wrapper alto, não o elemento |
+| Estava certo, saiu do lugar depois de carregar | altura mudou depois do refresh — fontes ou imagem sem dimensão reservada |
+| Marcadores certos, nada anima | seletor não resolve dentro do `scope`, ou nenhuma condição do `matchMedia` casou |
+| Pin salta um frame ao entrar | falta `anticipatePin: 1` |
+| Layout quebra ao ligar o pin | `pin-spacer` entrou entre o pai e o filho — pine um wrapper |
+| Elemento pinado some | ancestral com `overflow: hidden` ou `transform` |
+| Scroll briga consigo mesmo | GSAP registrado duas vezes, ou Lenis sem `ScrollTrigger.update` |
+| Micro-jitter constante com scrub | Lenis rodando o próprio `raf` em vez do `gsap.ticker` |
+| Salto de posição depois de um travamento | falta `gsap.ticker.lagSmoothing(0)` |
+| Tudo re-mede no scroll do celular | falta `ScrollTrigger.config({ ignoreMobileResize: true })` |
+| Anima duas vezes / valores dobrados | falta `mm.revert()` no cleanup — Strict Mode montou duas vezes |
+| Timeline com scrub parece atrasada | scrub numérico empilhado sobre o Lenis |
+
+Perfil rápido: DevTools → Performance, 4× CPU throttle, rolar a seção. Barras roxas
+(Layout/Recalculate Style) durante o scrub significam que algo fora de `transform`/`opacity`
+está sendo animado.

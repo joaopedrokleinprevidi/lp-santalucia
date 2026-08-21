@@ -14,53 +14,26 @@ Think like an elite product team.
 
 # Mandatory Workflow
 
-Every implementation MUST follow this order.
+Every implementation MUST follow this order. The numbering is the one in
+`landing-page-factory/SKILL.md`, which is the source of truth — if this list ever
+disagrees with it, this list is the one that is wrong.
 
-Brand DNA (if client assets exist)
-
-↓
-
-Creative Direction
-
-↓
-
-Landing Storytelling
-
-↓
-
-AI Visual Prompts (if sections need generated imagery)
-
-↓
-
-Product Design
-
-↓
-
-Frontend Design (aesthetic character)
-
-↓
-
-Landing Motion
-
-↓
-
-GSAP ScrollTrigger (if scroll exists)
-
-↓
-
-Scroll Video Director (if video exists)
-
-↓
-
-Video to Website (if scroll must control playback frame by frame)
-
-↓
-
-Motion UI (component interactions)
-
-↓
-
-Responsive & Accessibility
+```
+0  briefing-cliente → 1 estudo-assets → 2 brand-dna-extractor → 3 auditoria-dados
+   → 4 niche-research (if there is a site, an Instagram or a local competitor)
+5  creative-direction-expert (pass 1)
+6a estrutura-secoes → 6b copy-conversao
+7  creative-direction-expert (pass 2)
+8a prompt-imagem (sections that earn a generated still)
+8b prompt-animacao (stills that earn a clip)
+9  the dev generates the media in ChatGPT and Google Flow
+10 product-design-expert → frontend-design → landing-motion-expert, which routes:
+     scroll drives it            → gsap-scrolltrigger-expert
+     there is video              → video-decisao → video-encode | video-to-website
+     button|card|menu|form|modal → motion-ui-expert
+11 audit-responsivo (11a) → audit-acessibilidade (11b) → audit-performance (11c)
+12 publicar-lp
+```
 
 Never skip this order.
 
@@ -74,22 +47,71 @@ verification gate between phases.
 
 # Skill Roster
 
+Twenty-four skills, one layer each. A skill that decides in two layers is two skills.
+
+## Entry — phases 0 to 4
+
 | Skill | Owns | Produces |
 |---|---|---|
-| `landing-page-factory` | Orchestration of the entire pipeline | The live site |
-| `brand-dna-extractor` | Measuring a brand from its real assets | `design/design-system.json` |
-| `creative-direction-expert` | Experience Score, Creative Budget, WOW moments | `design/creative-direction.json` |
-| `landing-storytelling-director` | Section order, narrative, copy, CTA strategy | `design/landing-blueprint.md` |
-| `ai-visual-prompt-director` | Image and animation prompts per section | `design/image-prompts.md`, `design/motion-prompts.md` |
-| `product-design-expert` | Type scale, spacing, grid, tokens, hierarchy | The design system in code |
-| `frontend-design` | Aesthetic character, type pairing, texture | The page's point of view |
-| `landing-motion-expert` | Motion language and routing between specialists | Duration/easing/stagger tokens |
-| `gsap-scrolltrigger-expert` | Scroll implementation: pin, scrub, parallax, reveal | Chapter timelines |
-| `scroll-video-director` | The `<video>` element and video direction | Encoded renditions, poster fallbacks |
-| `video-to-website` | Canvas frame sequences driven by scroll | Extracted frames + the scrubber |
-| `motion-ui-expert` | Component motion and every interaction state | Buttons, cards, menus, forms |
-| `responsive-e-acessibility` | The final audit — this gate blocks the merge | Pass or fail, item by item |
-| `skill-builder` | Creating and auditing the skills themselves | Skill files |
+| `briefing-cliente` | Credential preflight, and the three lists of what to ask the client: what blocks, what hurts, what enriches | `design/briefing.json` + `assets-source/` |
+| `estudo-assets` | Every image opened and read one by one, with two verdicts per file | `design/inventario.json` |
+| `brand-dna-extractor` | Measuring the brand from its real assets, colour sampled pixel by pixel | `design/design-system.json` |
+| `auditoria-dados` | What is still missing or contradictory, in one consolidated round | `design/lacunas.md` |
+| `niche-research` | The client's own channels, 3–5 local competitors, the banned industry phrases | `design/pesquisa.md` + `scripts/check-banned-copy.mjs` |
+
+## Direction — phases 5 to 7
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `creative-direction-expert` | Experience Score, Creative Budget, WOW moments, the 20-40-60-80-100 curve | `design/creative-direction.json` |
+| `estrutura-secoes` | Section order, archetype, pacing, `share` converted to scroll per section | `design/estrutura.md`, `src/data/story.ts` |
+| `copy-conversao` | Headline, eyebrow, body, button label, CTA strategy, FAQ | `design/landing-blueprint.md`, `src/data/site.ts` |
+
+## Media — phases 8a and 8b
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `prompt-imagem` | The Style Anchor, and which sections earn a generated still at all | `design/image-prompts.md` |
+| `prompt-animacao` | One motion prompt per approved still, and the MB budget per technique | `design/motion-prompts.md` |
+
+## Design — phase 10
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `product-design-expert` | Type scale, spacing, grid, hierarchy, palette, contrast, tokens | The `@theme` block in `src/styles/index.css` |
+| `frontend-design` | Aesthetic character, type pairing, texture, colour proportion | The page's point of view, on top of those tokens |
+
+## Motion — phase 10
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `landing-motion-expert` | The motion language, and routing between the three motion specialists | Duration, easing and stagger tokens |
+| `gsap-scrolltrigger-expert` | Scroll implementation: pin, scrub, parallax, reveal, horizontal | The scroll hooks in `src/hooks/` |
+| `motion-ui-expert` | Component motion and every interaction state | Buttons, cards, menus, forms, modals |
+| `video-decisao` | Whether the clip stays, what it says, which technique carries it | `design/video-plan.md` |
+| `video-encode` | ffmpeg renditions, poster frame and the `<video>` element | `public/media/` + `src/generated/media.ts` |
+| `video-to-website` | Canvas frame sequences driven by scroll, frame-accurate on iOS | `public/frames/` + the canvas component |
+
+## Gates — phase 11
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `audit-responsivo` | Gate 11a — mobile, tablet, viewport, motion density per breakpoint | `design/laudo-responsivo.md` |
+| `audit-acessibilidade` | Gate 11b — keyboard, screen reader, contrast, reduced motion | `design/laudo-acessibilidade.md` |
+| `audit-performance` | Gate 11c — page weight and Core Web Vitals on the production build | `design/laudo-performance.md` |
+
+## Publication — phase 12
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `publicar-lp` | Secret preflight, the `lp-<slug>` repo, Vercel deploy, cache headers, DNS | The production URL, delivered to the client |
+
+## Meta — outside the pipeline
+
+| Skill | Owns | Produces |
+|---|---|---|
+| `landing-page-factory` | The canonical numbering of the 13 phases and the gate between them | No file of its own — the executed sequence |
+| `skill-builder` | Creating, auditing and splitting the skills themselves | `.claude/skills/<name>/SKILL.md` |
 
 One source of truth: `design/design-system.json`. Downstream skills reference it —
 they never copy its values. A corrected hex propagates instead of being pasted in
@@ -341,18 +363,33 @@ Never implement code.
 
 ---
 
-## landing-storytelling-director
+## estrutura-secoes
 
 Responsible for
 
-- section order
-- storytelling
-- user journey
-- pacing
-- CTA strategy
+- section order and the narrative archetype
+- the user journey and the order in which objections fall
+- emotional pacing, `share` per section
+- the `scrollMobile / scroll` ratio
+
+This specialist decides WHAT users experience, and in what order.
+
+Writes no copy.
+
+---
+
+## copy-conversao
+
+Responsible for
+
+- headline, eyebrow, body, button label, FAQ
+- measured character ceilings per slot
+- CTA strategy and how many CTAs the page gets
 - conversion flow
 
-This specialist decides WHAT users experience.
+This specialist decides WHICH words the page says, inside the structure it is handed.
+
+Never changes the section order.
 
 ---
 
@@ -400,20 +437,35 @@ This specialist decides HOW scrolling behaves.
 
 ---
 
-## scroll-video-director
+## video-decisao
 
 Responsible for
 
-- scroll synchronized videos
-- currentTime mapping
-- video storytelling
-- cinematic sections
+- whether the clip stays or becomes a photograph
+- the narrative role: place, process, transformation, atmosphere
+- the technique per section: looping video, canvas frames, legacy `currentTime` scrub
+- the iOS Safari fallback
 
 Whenever MP4 assets exist,
 
 always evaluate whether they should become scroll-driven experiences.
 
 Default answer should be YES.
+
+Transcodes no byte and writes no component.
+
+---
+
+## video-encode
+
+Responsible for
+
+- the ffmpeg transcode, CRF, faststart and the poster frame
+- desktop and mobile renditions, and the weight per second
+- the `<video>` element: muted, playsInline, IntersectionObserver gating
+- the reduced-motion fallback
+
+Owns the plain `<video>`. Takes direction from video-decisao, never re-decides it.
 
 ---
 
@@ -433,19 +485,73 @@ This specialist owns component motion.
 
 ---
 
-## responsive-e-acessibility
+## audit-responsivo
 
 Responsible for
 
-- mobile
-- tablet
-- keyboard
-- screen readers
-- reduced motion
-- accessibility
+- mobile, tablet and viewport behaviour
+- 375px with no horizontal scroll, 44px touch targets, 320px reflow
+- motion density per breakpoint: pin that becomes sticky, parallax with reduced travel
 - adaptive layouts
 
-No implementation is complete until approved by this specialist.
+Gate 11a. Runs first, because every layout fix moves font size and element position.
+
+---
+
+## audit-acessibilidade
+
+Responsible for
+
+- keyboard, focus order, focus-visible, skip link, focus traps
+- screen readers, semantics, heading hierarchy, landmarks, useful alt text
+- contrast at 4.5:1 and 3:1, and the scrim over the brightest video frame
+- reduced motion
+
+Gate 11b. Runs on the approved responsive report, because contrast and focus
+order only exist at runtime.
+
+---
+
+## audit-performance
+
+Responsible for
+
+- page weight in MB against the Experience Score budget
+- LCP 2.5s, CLS 0.1, INP 200ms on slow 4G
+- the critical path, lazy loading, frame sequence cost
+- fonts, `og:image`, AVIF/WebP
+
+Gate 11c. Runs on the production build, because only it has the real numbers.
+
+No implementation is complete until all three gates pass with no BLOQUEIO.
+
+---
+
+## briefing-cliente
+
+Responsible for
+
+- the credential preflight: node, git, gh, vercel, image generator
+- the three lists of what to ask the client: what blocks, what hurts, what enriches
+- the briefing template, written for someone who is not a designer
+- one consolidated round of questions
+
+Phase 0. Nothing starts before it.
+
+Asks once. The third phone call to the client is the one that stops being answered.
+
+---
+
+## estudo-assets
+
+Responsible for
+
+- opening and looking at every single image, one at a time
+- classifying by the fact the file carries, never by its filename
+- two independent verdicts per file: usable on the page and at what width, usable as a reference
+- triaging the assets that carry nothing
+
+Phase 1. A filename is a claim, not evidence.
 
 ---
 
@@ -465,18 +571,62 @@ Never invent a contact detail. If it is not legible in an asset, it is unverifie
 
 ---
 
-## ai-visual-prompt-director
+## auditoria-dados
+
+Responsible for
+
+- what is still missing once the briefing, the inventory and the design system exist
+- the blocks / important / optional split, each with the exact question in plain Portuguese
+- the default assumption behind every question that is not asked
+- conflicts between two sources that both came from the client
+
+Phase 3. One of the three stops that wait for the dev.
+
+A conflict is never decided alone. Two of the client's own sources contradicting
+each other needs the client.
+
+---
+
+## niche-research
+
+Responsible for
+
+- the client's site, Instagram and Google reviews
+- 3 to 5 local competitors, and the gap between them
+- the industry phrases that are banned from the copy
+- the objections, ordered by what each one costs
+
+Phase 4. Runs before a single word of copy is written.
+
+Uses the literal words of the reviews, never the words the industry uses about itself.
+
+---
+
+## prompt-imagem
 
 Responsible for
 
 - the Style Anchor that keeps every generated image on the same brand
-- one image prompt per section
-- one motion prompt per section, written for scroll scrubbing
-- deciding which sections earn a generated image at all
+- one image prompt per section, and deciding which sections earn one at all
+- the three gates: no lettering, no recognizable face, concrete subject
+- which real files get attached as reference
 
 Never generates the real storefront or the real team.
 
 Those are real photographs of a real business. Fabricating them asserts something false.
+
+---
+
+## prompt-animacao
+
+Responsible for
+
+- one motion prompt per approved still, written for scroll scrubbing
+- clip length, one continuous move, no cut, no shake, no loop seam
+- which playback technique each section lands on
+- the MB table and the ffmpeg extraction command
+
+The still is the first frame. A clip with a cut in the middle is useless here.
 
 ---
 
@@ -491,7 +641,8 @@ Responsible for
 
 Owns frame accuracy.
 
-Delegates the plain `<video>` element back to scroll-video-director.
+Delegates the plain `<video>` element to video-encode, and the decision of which
+technique a section gets to video-decisao.
 
 ---
 
@@ -511,16 +662,31 @@ motion — never by inventing colors the brand does not own.
 
 ---
 
+## publicar-lp
+
+Responsible for
+
+- the secret and gitignore preflight before anything is pushed
+- the `lp-<slug>` repository on GitHub, private until the sweep passes
+- the Vercel deploy, immutable cache headers and the domain DNS
+- the post-deploy checks and the message handed to the client
+
+Phase 12. Runs only after all three gates pass with no BLOQUEIO.
+
+Publishes nothing while an item that blocks is still open in `design/lacunas.md`.
+
+---
+
 ## landing-page-factory
 
 Responsible for
 
 - running the entire pipeline end to end
-- verifying credentials before any work begins
+- the canonical numbering of the 13 phases — every other skill derives its
+  contract from it
 - the gate between each phase
-- publishing to GitHub and Vercel
 
-Does not do the work. Coordinates the specialists who do.
+Does not do the work. Coordinates the 23 specialists who do.
 
 ---
 
@@ -528,9 +694,10 @@ Does not do the work. Coordinates the specialists who do.
 
 Responsible for
 
-- creating, rewriting and auditing the skills themselves
-- deciding which skill owns a piece of knowledge
-- keeping every SKILL.md under 500 lines
+- creating, rewriting, auditing and splitting the skills themselves
+- deciding which skill owns a piece of knowledge, and which owns a number
+- keeping every SKILL.md between 150 and 300 lines, and every description at 450
+  characters or fewer
 
 Use it whenever a skill contradicts another one.
 

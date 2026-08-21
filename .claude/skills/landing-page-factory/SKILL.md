@@ -1,232 +1,252 @@
 ---
 name: landing-page-factory
-description: Use to run an entire landing page project end to end, from a folder of client assets to a live URL — extracting the brand, writing the structure and copy, generating one AI image per section, animating each into a short clip, building the scroll-driven Next.js site and deploying to GitHub and Vercel. Pipeline completo de landing page premium a partir dos assets do cliente até o site no ar. Orquestra todas as outras skills na ordem correta.
+description: Use to run a whole landing page project end to end, from a folder of client assets to a live URL. Algoritmo completo da fábrica de landing page: briefing, estudo dos assets, DNA da marca, lacunas, pesquisa de nicho, direção criativa, estrutura, copy, prompts de imagem e animação, build Next.js com scroll, portões de auditoria e deploy no GitHub e Vercel. Orquestra as outras 23 skills.
 argument-hint: [pasta-de-assets] [nome-do-cliente]
 ---
 
 # Landing Page Factory
 
+| | |
+|---|---|
+| **ENTRADA** | a pasta de assets do cliente e os dados que o dev trouxe. Nada mais: todo artefato do pipeline é escrito por uma das 23 skills chamadas daqui |
+| **SAÍDA** | nenhum arquivo próprio. A saída é a sequência executada e os três portões respeitados; o último artefato é o de `publicar-lp` — repo `lp-<slug>` e URL de produção |
+| **ANTES** | nenhuma. É o ponto de entrada do projeto |
+| **DEPOIS** | `briefing-cliente` (Fase 0), e daí a ordem do algoritmo abaixo |
+
+Esta skill é o único lugar onde a numeração das 13 fases é canônica. Cada uma das outras 23
+declara o próprio contrato ENTRADA/SAÍDA/ANTES/DEPOIS no topo do SKILL.md dela, derivado desta
+ordem. Se um contrato divergir daqui, o contrato está errado.
+
 Uma pasta com fotos e um telefone entram. Um site no ar sai.
 
-Esta skill não faz o trabalho — ela **coordena** as outras doze na ordem certa, com um portão
-de verificação entre cada etapa. É a diferença entre um time e um monte de especialistas
-falando ao mesmo tempo.
+Esta skill não faz o trabalho — ela é o **algoritmo** que chama as outras 23 na ordem certa,
+com um portão entre cada passo.
 
-> **Se você é leigo:** leia [para-leigos.md](para-leigos.md) primeiro. Explica o que cada
-> etapa faz, o que você precisa ter em mãos e o que vai te ser pedido, sem jargão.
+## O contrato com o dev
 
-## Antes de começar: o que precisa existir
+O dev é leigo. O trabalho dele inteiro são quatro linhas:
 
-Rode esta verificação **antes da Fase 1**. Descobrir na Fase 6 que falta uma credencial custa
-o projeto inteiro em retrabalho.
+1. Trazer os dados da empresa e as imagens que o cliente tiver.
+2. Dizer "gere".
+3. Colar os prompts que eu entrego no ChatGPT (imagens) e no Google Flow (clipes), salvando nos
+   caminhos que cada bloco indica.
+4. Aprovar o login no navegador quando uma credencial for pedida.
 
-```bash
-gh auth status          # GitHub conectado?
-vercel whoami           # Vercel conectado?
-node --version          # v20+
-```
+Todo o resto é meu. Não existe passo 5.
 
-| Item | Obrigatório? | Como conseguir |
-|---|---|---|
-| Pasta com os assets do cliente | **Sim** | Logo, fotos, posts de rede social, material impresso |
-| Dados de contato reais | **Sim** | Telefone, WhatsApp, endereço, horário. Confirmados pelo cliente, não deduzidos |
-| GitHub autenticado (`gh auth login`) | **Sim** | [Credenciais](credentials.md#github) |
-| Vercel autenticado (`vercel login`) | Só para publicar | [Credenciais](credentials.md#vercel) |
-| Acesso a um gerador de imagem (ChatGPT/GPT Image, Midjourney, Sora) | Para as imagens | Você gera manualmente, colando os prompts |
-| Acesso ao Google Flow / Veo | Para as animações | Você gera manualmente, colando os prompts |
-| Domínio | Não | Vercel dá um `.vercel.app` de graça |
+Consequência operacional: **pergunte numa rodada consolidada e declare suposição para tudo que
+não for bloqueante.** Pergunta pingada é um telefonema do dev para o cliente; na terceira, o
+cliente para de atender.
 
-Detalhe de cada uma, incluindo o que fazer quando falta: [credentials.md](credentials.md).
-
-**Regra de ouro sobre credenciais:** nunca peça, receba ou escreva um token no chat ou em
-arquivo do projeto. `gh auth login` e `vercel login` abrem o navegador e guardam a credencial
-no sistema. Chave que precise viver no projeto vai em `.env.local`, que já está no `.gitignore`.
-
-## Decisões que travam a Fase 1
-
-Se o usuário não disse, decida e **declare a decisão**, não pergunte:
-
-| Decisão | Padrão | Quando mudar |
-|---|---|---|
-| Framework | **Next.js App Router** | Vite + React se não houver necessidade de SEO (app interno, página de evento fechada) |
-| Experience Score | ★★★★☆ | ★★★★★ só se houver orçamento de imagem/vídeo e o cliente pedir |
-| Idioma | pt-BR | — |
-| Conversão | WhatsApp | Formulário só se o cliente não usa WhatsApp comercial |
-| Hospedagem | Vercel | — |
-
-Next.js é o padrão porque landing page é conteúdo público: precisa de `metadata`, JSON-LD,
-sitemap, Open Graph e renderização no servidor. Vite não entrega isso sem trabalho manual.
+> Versão sem jargão, para o dev ler: [para-leigos.md](para-leigos.md).
 
 ---
 
-## As sete fases
+## O algoritmo
 
-Cada fase tem um **artefato** e um **portão**. Não avance com o portão vermelho — o custo de
-consertar dobra a cada fase que passa.
-
-### Fase 1 — DNA da marca
-
-**Skill:** `brand-dna-extractor`
-**Artefato:** `design/design-system.json`
-
-Amostra os pixels dos assets e produz cores medidas, classe tipográfica, formas, motifs, voz e
-os fatos verificáveis do negócio. Separa `facts` (está num asset) de `inferences` (foi deduzido)
-de `unverified` (bloqueia publicação).
-
-**Portão:** o JSON parseia; toda cor tem o arquivo de origem ao lado; contraste calculado;
-`typography.observed` traz a classe tipográfica e `typography.chosen` continua `null` — quem
-escolhe a família é `frontend-design`, na Fase 5, e é lá que o teste de `ção`/`não`/`ú` roda.
-
-### Fase 2 — Estrutura e copy
-
-**Skills:** `creative-direction-expert` (passada 1) → `landing-storytelling-director` →
-`creative-direction-expert` (passada 2)
-**Artefato:** `design/landing-blueprint.md` + `design/creative-direction.json`
-
-A ordem é a do CLAUDE.md: direção criativa primeiro. Na passada 1 ela fixa o Experience Score, o
-`depth` total da página e em que posição da curva o pico cai — e nada por capítulo, porque os
-capítulos ainda não existem. Então o storytelling escolhe o arquétipo, ordena as seções, escreve
-a copy definitiva e reparte o `share`, convertendo-o em `scroll` / `scrollMobile` com
-`scrollProp()`. Na passada 2 a direção criativa lê o story map pronto e ratifica: `band` por
-capítulo, pontos, entradas, silêncio, e onde ficam o WOW major, os dois medium e os small.
-
-Para projeto que vale o custo, gere **três arquétipos concorrentes** e julgue por três lentes
-independentes (conversão, qualidade de copy em pt-BR, experiência), depois sintetize a
-vencedora enxertando o melhor das outras. Uma estrutura escolhida às cegas é a origem da
-maioria das LPs medianas.
-
-**Portão:** copy 100% nova (nada reaproveitado do site antigo do cliente); todo número citado
-existe no `design-system.json`; nenhuma promessa que caia em `unverified`; headline do hero
-≤62 caracteres e de capítulo ≤56 (tetos de `landing-storytelling-director`, medidos contra os
-tokens de tipo — não os aperte aqui); existe 1 WOW major.
-
-### Fase 3 — Prompts de imagem
-
-**Skill:** `ai-visual-prompt-director`
-**Artefato:** `design/image-prompts.md`
-
-Escreve o **Style Anchor** — um parágrafo em inglês, idêntico em todos os prompts, que carrega
-luz, lente e paleta. É ele que faz oito imagens geradas separadamente parecerem o mesmo ensaio.
-Depois, um bloco por seção.
-
-**Portão:** o anchor está congelado; todo prompt tem `EXCLUDE: text, letters, logos,
-watermarks`; a linha `COMPOSITION` diz onde fica o espaço vazio para a copy cair por cima;
-nenhuma seção pede geração da fachada real ou da equipe real.
-
-> **Você gera as imagens aqui, manualmente.** Cole cada prompt no ChatGPT (ou no gerador que
-> preferir). Salve em `assets/generated/<secao>.png`, na maior resolução possível.
-
-### Fase 4 — Prompts de animação
-
-**Skill:** `ai-visual-prompt-director` + `video-to-website`
-**Artefato:** `design/motion-prompts.md`
-
-Cada still vira um clipe de 4–6 segundos. As restrições vêm da etapa seguinte, não do gosto:
-um movimento contínuo, sem corte, sem tremor, sem loop, lento.
-
-**Portão:** no máximo **duas** seções recebem sequência de frames em canvas; a tabela-resumo
-fecha abaixo de 12 MB desktop / 5 MB mobile; cada bloco diz qual técnica é o destino.
-
-> **Você gera os clipes aqui, manualmente,** no Google Flow. Salve em
-> `assets/generated/<secao>.mp4`.
-
-### Fase 5 — Design e implementação
-
-**Skills, nesta ordem:** `product-design-expert` → `frontend-design` → `landing-motion-expert`
-(que roteia para `gsap-scrolltrigger-expert`, `scroll-video-director`, `video-to-website` e
-`motion-ui-expert`)
-
-**Artefato:** o projeto Next.js funcionando local.
-
-Scaffold, tokens, pipeline de assets, SEO, seções, motion. O detalhe técnico está em
-[stack.md](stack.md): estrutura de pastas, `metadata`, JSON-LD `VeterinaryCare`/`LocalBusiness`,
-sitemap, `next/font`, pipeline `sharp` + `ffmpeg`, e o wiring de GSAP + Lenis no App Router
-(que exige `'use client'` e cuidado com Strict Mode).
-
-**Portão:** `npm run build` passa; nenhuma seção repete a entrada da anterior; o Lighthouse
-local não regride abaixo de 90 em Performance e 100 em SEO.
-
-### Fase 6 — Auditoria
-
-**Skill:** `responsive-e-acessibility` — **este portão bloqueia o deploy.**
-
-Roda o protocolo de auditoria: breakpoints, alvos de toque de 44px, ordem de foco, semântica,
-contraste medido, alt text útil, `prefers-reduced-motion`, peso em conexão lenta.
-
-**Portão:** aprovação explícita, item por item. Reprovou, volta para a Fase 5. Não existe
-"depois a gente arruma".
-
-### Fase 7 — Publicar
-
-**Artefato:** repositório no GitHub + URL de produção na Vercel.
-
-```bash
-git init -b main && git add -A
-git commit -m "Landing page <cliente>"
-gh repo create <owner>/<repo> --public --source . --remote origin --push
-vercel link && vercel --prod
 ```
+ALGORITMO landing_page(pasta_assets, dados_do_cliente)
 
-Antes de rodar: confirme que `.env*` está no `.gitignore` e que nenhum dado pessoal do cliente
-(contrato, CPF, tabela de preços interna) entrou no commit. Repositório público é público.
+  ── ENTRADA ──────────────────────────────────────────────────────────────────
 
-**Portão:** a URL abre; o WhatsApp abre com a mensagem certa; o telefone disca no mobile; os
-dados de contato batem com o que o cliente confirmou.
+  0.  briefing-cliente(dados_do_cliente)                    → design/briefing.json
+      SE falta node≥20 | git | gh            ENTÃO PARE · peça ao dev (credentials.md)
+      SE falta campo do bloco BLOQUEIA       ENTÃO PARE · peça numa rodada só
+      SENÃO                                        registre a suposição e siga
+
+  1.  PARA CADA arquivo EM pasta_assets:
+        estudo-assets(arquivo)                              → design/inventario.json
+        · abra e OLHE a imagem — nunca classifique pelo nome do arquivo
+        · dois vereditos: serve na página (e em que largura) · serve como referência
+      SE nenhum logo utilizável              ENTÃO PARE · peça o logo em vetor ou alta
+
+  2.  brand-dna-extractor(inventario)                       → design/design-system.json
+      SE cor da marca reprova contraste      ENTÃO registre o tom que passa · SIGA
+        (nunca troque a cor da marca em silêncio)
+
+  3.  auditoria-dados(briefing, inventario, design-system)  → design/lacunas.md
+      SE existe item BLOQUEIA                ENTÃO ESPERE resposta_do_dev  ⟵ parada 1
+      SE existe CONFLITO entre fontes        ENTÃO ESPERE sempre
+        (duas fontes do próprio cliente se negando não é suposição minha)
+
+  4.  niche-research()                                      → design/pesquisa.md
+                                                            + scripts/check-banned-copy.mjs
+      SE o diferencial já está documentado E há ≥2 números verificáveis
+        ENTÃO passada CURTA (2 concorrentes, ≤8 buscas)
+        SENÃO passada COMPLETA (5 frentes, 3 a 5 concorrentes)
+      NUNCA zero: as seis seções de pesquisa.md são ENTRADA da 6a e da 6b, e o
+      script é o portão de saída da 6b — sem os dois arquivos a Fase 6 trava
+
+  ── DIREÇÃO ──────────────────────────────────────────────────────────────────
+
+  5.  creative-direction-expert(passe 1)                    → Score, budget, profundidade
+      · fixa Experience Score, MB de mídia e onde cai o pico da curva
+      · ainda NÃO decide por capítulo — os capítulos não existem
+      scaffold Next.js na própria pasta (stack.md §2)       → src/, app/, package.json
+      · aqui, não na Fase 10: a 6a grava src/data/story.ts e a 6b grava src/data/site.ts
+      · create-next-app aborta numa pasta que já tem src/ — depois da 6a é tarde
+
+  6a. estrutura-secoes(briefing, pesquisa, budget)          → ordem + scroll por seção
+  6b. copy-conversao(estrutura, pesquisa)                   → design/landing-blueprint.md
+      SE a página vale o custo
+        ENTÃO gere 3 arquétipos concorrentes
+              julgue por 3 lentes (conversão · copy pt-BR · experiência)
+              sintetize a vencedora enxertando o melhor das outras
+      ESPERE revisão_do_dev                                            ⟵ parada 2
+        (último momento barato de mudar: depois disso a composição de cada
+         imagem já foi desenhada em volta deste texto)
+
+  7.  creative-direction-expert(passe 2)                    → design/creative-direction.json
+      · ratifica banda, pontos e entrada de cada capítulo
+      SE algum capítulo estourou a banda    ENTÃO devolva para 6a
+
+  ── MÍDIA ────────────────────────────────────────────────────────────────────
+
+  8a. PARA CADA seção EM blueprint:
+        SE a seção afirma fato sobre o negócio real
+          ENTÃO marque USAR FOTO REAL <arquivo>   (fachada e equipe nunca se geram)
+        SENÃO SE a seção tem assunto concreto (pessoa|lugar|animal|objeto|gesto)
+          ENTÃO prompt-imagem(seção)                        → bloco em image-prompts.md
+        SENÃO marque SEM IMAGEM · a seção é tipografia
+
+  8b. PARA CADA still EM image-prompts:
+        prompt-animacao(still)                              → bloco em motion-prompts.md
+      SE soma das frame sequences > budget.mediaDesktopMB
+        ENTÃO rebaixe a mais barata para loop · REPITA a soma
+      SE nº de frame sequences > 1
+        ENTÃO mantenha só a mais forte, salvo se estiverem distantes na página
+
+  9.  PARA CADA bloco EM image-prompts:                                ⟵ parada 3
+        REPITA
+          dev cola no ChatGPT (Style Anchor + prompt + anexos)
+        ATÉ passar nos três portões:
+          sem letra/número/placa · sem rosto reconhecível · assunto concreto
+      PARA CADA clipe EM motion-prompts:
+        REPITA
+          dev anima no Google Flow
+        ATÉ sem corte · sem tremor · sem mudança de velocidade
+      SE 3 tentativas sem resultado         ENTÃO reescreva o prompt · não aceite a 4ª
+      → design/renders/NN-secao.png e .mp4     (guia: handoff-imagens.md)
+
+  ── CONSTRUÇÃO ───────────────────────────────────────────────────────────────
+
+  10. copie design/renders/ → assets-source/    (senão o build passa sem as mídias)
+      product-design-expert()                   → tokens, escala, grade
+                                                → src/components/chapters/*.tsx, um por seção
+      frontend-design()                         → par tipográfico, textura, caráter
+      landing-motion-expert()                   → roteia, por seção:
+        SE scroll controla algo                 → gsap-scrolltrigger-expert
+        SE existe vídeo                         → video-decisao
+             SE a mudança no tempo É a batida   → video-to-website (canvas frames)
+             SENÃO                              → video-encode (loop | once)
+        SE é botão|card|menu|form|modal         → motion-ui-expert
+      SE a entrada da seção repete a anterior   ENTÃO troque a entrada
+
+  ── PORTÕES ──────────────────────────────────────────────────────────────────
+
+  11. audit-responsivo()      → BLOQUEIO | RESSALVA
+      audit-acessibilidade()  → BLOQUEIO | RESSALVA
+      audit-performance()     → BLOQUEIO | RESSALVA
+      SE qualquer BLOQUEIO                     ENTÃO volte para 10 · REPITA
+      (não existe "depois a gente arruma": acessibilidade adiada nunca é feita)
+
+  ── PUBLICAÇÃO ───────────────────────────────────────────────────────────────
+
+  12. SE ainda existe item BLOQUEIA em lacunas.md
+        ENTÃO PARE · publicar promessa não confirmada custa mais que atrasar
+      publicar-lp()                            → repo lp-<slug> + URL de produção
+
+FIM
+```
 
 ---
 
-## Coordenação: como as doze skills se encaixam
+## Quem faz o que
+
+| # | Fase | Skill dona | Artefato | DEV atua? |
+|---|---|---|---|---|
+| 0 | Briefing e credenciais | `briefing-cliente` | `design/briefing.json` | **Sim** — traz dados e imagens |
+| 1 | Estudo dos assets | `estudo-assets` | `design/inventario.json` | Não |
+| 2 | DNA visual | `brand-dna-extractor` | `design/design-system.json` | Não |
+| 3 | Auditoria de lacunas | `auditoria-dados` | `design/lacunas.md` | **Sim** — 1 rodada única |
+| 4 | Pesquisa de nicho | `niche-research` | `design/pesquisa.md` | Não |
+| 5 | Direção criativa I + scaffold | `creative-direction-expert` | Score + orçamento · projeto Next.js criado | Não |
+| 6a | Estrutura | `estrutura-secoes` | ordem e scroll por seção | Não |
+| 6b | Copy | `copy-conversao` | `design/landing-blueprint.md` | **Sim** — revisa o texto |
+| 7 | Direção criativa II | `creative-direction-expert` | `design/creative-direction.json` | Não |
+| 8a | Prompts de imagem | `prompt-imagem` | `design/image-prompts.md` | Não |
+| 8b | Prompts de animação | `prompt-animacao` | `design/motion-prompts.md` | Não |
+| 9 | Geração das mídias | manual | `design/renders/` | **Sim** — ChatGPT + Flow |
+| 10 | Design e implementação | `product-design-expert` (tokens + componentes de capítulo) → `frontend-design` → `landing-motion-expert` | Next.js rodando local | Não |
+| 11 | Portões | `audit-responsivo` · `audit-acessibilidade` · `audit-performance` | laudo aprovado | Não |
+| 12 | Publicar | `publicar-lp` | repo + URL | **Sim** — autoriza |
+
+Três paradas esperam o dev: **3**, **6b** e **9**, mais a autorização da **12**. As outras rodam
+sem ele.
+
+> Esta numeração é canônica e vale em todos os arquivos da fábrica. Se um arquivo divergir, o
+> arquivo está errado — conserte o arquivo, não a tabela.
+
+---
+
+## Decisões que eu tomo sozinho e declaro
+
+Perguntar isso a um dev leigo devolve "não sei" e gasta a rodada da Fase 3.
+
+| Decisão | Padrão | Por quê | Quando muda |
+|---|---|---|---|
+| Framework | **Next.js App Router** | `metadata`, JSON-LD, sitemap e OG servidos pelo framework; no Vite os quatro são trabalho manual que ninguém mantém | Vite se não houver SEO em jogo |
+| Experience Score | **★★★★☆** | Default do CLAUDE.md: GSAP, storytelling pinado, motion em camadas, sem exigir produção de vídeo | ★★★★★ com orçamento real de mídia **e** pedido do cliente |
+| Idioma | **pt-BR** | `lang="pt-BR"`, `latin-ext` nas fontes, telefone e moeda locais | Nunca, nesta fábrica |
+| Conversão | **WhatsApp** | Negócio local brasileiro responde no WhatsApp; formulário adiciona um canal que ninguém checa | Se o cliente não tem WhatsApp comercial |
+| Hospedagem | **Vercel** | Detecta o Next sozinha, Hobby é grátis, e o MCP traz o log de build para dentro da conversa | Nunca, nesta fábrica |
+| Repositório | **`lp-<slug>`, privado** | Privado funciona igual na Vercel e não expõe o que ninguém revisou | Público após a varredura da Fase 12 |
+
+## Fontes da verdade
 
 ```
-Fase 1   brand-dna-extractor ──────────────► design-system.json
-                                                      │
-Fase 2   creative-direction-expert (passada 1) ◄──────┤
-         landing-storytelling-director ◄──────────────┤  (todas leem
-         creative-direction-expert (passada 2)        │   deste arquivo)
-                    │                                 │
-Fase 3   ai-visual-prompt-director ◄──────────────────┤
-Fase 4   ai-visual-prompt-director + video-to-website ┤
-                    │                                 │
-Fase 5   product-design-expert ◄──────────────────────┤
-         frontend-design ◄────────────────────────────┤
-         landing-motion-expert ──┬── gsap-scrolltrigger-expert
-                                 ├── scroll-video-director ── video-to-website
-                                 └── motion-ui-expert
-                    │
-Fase 6   responsive-e-acessibility  ◄── PORTÃO BLOQUEANTE
-                    │
-Fase 7   git + gh + vercel
+design/briefing.json ──┐
+design/inventario.json ─┼──→ lidos por todas as fases seguintes
+design/design-system.json ─┘   NUNCA copiados para dentro de outro artefato
 ```
 
-Duas regras de coordenação que evitam o retrabalho mais caro:
+Um hex corrigido na Fase 2 propaga sozinho. Um hex colado em cinco arquivos vira cinco versões
+da marca.
 
-1. **Uma fonte da verdade.** `design-system.json` não é copiado para dentro dos outros
-   artefatos — é referenciado. Uma cor corrigida na Fase 1 propaga sozinha; uma cor colada em
-   cinco arquivos vira cinco versões da marca.
-2. **Nunca pule a ordem.** Animar antes de definir a estrutura produz timeline linda para
-   seção que vai ser cortada. Gerar imagem antes da copy produz imagem sem lugar para o texto.
-
-## Anti-patterns do pipeline
+## Anti-patterns
 
 - **Gerar imagem antes da copy existir** — a composição precisa saber onde o texto cai.
-- **Reescrever o Style Anchor no meio** — as seções param de casar entre si e a página vira
-  colagem de bancos de imagem diferentes.
-- **Frame sequence em toda seção** — vira download de 40 MB. Duas, no máximo.
-- **Publicar com pendência de `unverified`** — promessa falsa sobre negócio real custa mais
-  caro que atraso.
-- **Deploy antes do portão da Fase 6** — acessibilidade vira dívida que ninguém paga.
-- **Copiar a copy do site antigo do cliente** — se o site antigo convertesse, não haveria projeto.
-- **Repositório público com dados internos** — confira o `.gitignore` antes do primeiro commit.
+- **Reescrever o Style Anchor no meio** — as seções param de casar e a página vira colagem.
+- **Frame sequence em toda seção** — vira download. Uma por página; duas só se distantes.
+- **Publicar com item BLOQUEIA aberto** — promessa falsa sobre negócio real custa mais que atraso.
+- **Decidir um CONFLITO sozinho** — duas fontes do cliente se negando exige o cliente.
+- **Pular o portão da Fase 11** — acessibilidade adiada vira dívida que ninguém paga.
+- **Repositório público com dado interno** — o histórico do git guarda mesmo depois de apagar.
+- **Aceitar imagem 80% certa** — arrasta a página mais para baixo que uma seção sem imagem.
+- **Perguntar em conta-gotas** — queima a paciência do cliente do dev.
+- **`create-next-app <nome>`** — aninha o projeto e deixa `design/` fora do repositório. Use `.`.
 
 ## Verificação final
 
-- [ ] `npm run build` passa sem warning novo
-- [ ] Lighthouse: Performance ≥90, Acessibilidade 100, SEO 100
+```bash
+npm run build                      # passa sem warning novo
+npm start                          # build de produção no ar, é onde a Fase 11c mede
+git check-ignore -v .env.local design/renders design/lacunas.md   # os três ignorados
+gh repo view --json visibility     # privado até a varredura passar
+```
+
+- [ ] Lighthouse: Performance ≥90 · Acessibilidade 100 · SEO 100
 - [ ] `prefers-reduced-motion` ligado: página inteira legível, nada quebrado
 - [ ] Teclado: navega tudo, foco sempre visível
-- [ ] Mobile 375px: sem scroll horizontal, alvos ≥44px
-- [ ] WhatsApp abre com mensagem pré-preenchida; telefone disca
-- [ ] Dados de contato conferidos com o cliente, não deduzidos
-- [ ] JSON-LD valida no Rich Results Test do Google
+- [ ] 375px: sem scroll horizontal, alvos ≥44px
+- [ ] WhatsApp abre com a mensagem pronta; telefone disca no celular
+- [ ] Nenhuma imagem com letra, número ou rosto reconhecível
+- [ ] JSON-LD valida no Rich Results Test
 - [ ] OG image aparece ao colar o link no WhatsApp
-- [ ] Nenhum `unverified` pendente virou promessa na página
+- [ ] Dados de contato conferidos com o cliente, não deduzidos
+- [ ] Nenhum item `unverified` virou promessa na página
+
+## Arquivos da fábrica
+
+[para-leigos.md](para-leigos.md) · [credentials.md](credentials.md) ·
+[handoff-imagens.md](handoff-imagens.md) · [stack.md](stack.md) · skill [`publicar-lp`](../publicar-lp/SKILL.md)

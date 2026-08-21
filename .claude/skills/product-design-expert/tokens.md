@@ -24,16 +24,83 @@ fluid(32, 56) // "clamp(2rem, 1.500rem + 2.22vw, 3.5rem)"
 Rode uma vez, cole o resultado no `@theme`. Não deixe a chamada em runtime: o valor é constante
 e o CSS precisa dele em build.
 
+## Medir `1ch` da família real
+
+A medida de leitura em `ch` (60–75 no corpo) só é confiável depois de saber quanto vale `1ch` na
+fonte **daquele** elemento: `1ch` é o avanço do glifo `0`, não a largura média de caractere, e
+resolve contra a família do próprio elemento. Cole no console com a página carregada:
+
+```js
+const el = document.querySelector('p')
+const fs = parseFloat(getComputedStyle(el).fontSize)
+const probe = Object.assign(document.createElement('span'), { textContent: '0'.repeat(100) })
+probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:inherit'
+el.append(probe)
+console.log((probe.getBoundingClientRect().width / 100 / fs).toFixed(3) + 'em por ch')
+probe.remove()
+```
+
+Inter dá ≈0.57em por `ch`; grotescas mais estreitas ficam perto de 0.5em. O mesmo `max-w-[65ch]`
+num título em `font-display` produz outra largura — meça antes de fixar o teto de um papel novo.
+
+## Os onze degraus e as bandas
+
+A referência para uma página que ainda não tem escala. Todo degrau fluido em `clamp()`, com mínimo
+em 360px e máximo em 1440px. Num repositório que já publica `@theme`, acrescente só o que falta —
+ver o aviso em [Bloco `@theme`](#bloco-theme).
+
+| Token | 360px | 1440px | `clamp()` | line-height | letter-spacing | Papel |
+|---|---|---|---|---|---|---|
+| `--text-display` | 48 | 128 | `clamp(3rem, 1.333rem + 7.41vw, 8rem)` | 1.02 | -0.03em | marquee, statement único da página |
+| `--text-hero` | 40 | 88 | `clamp(2.5rem, 1.5rem + 4.44vw, 5.5rem)` | 1.04 | -0.02em | h1, uma vez |
+| `--text-chapter` | 32 | 56 | `clamp(2rem, 1.5rem + 2.22vw, 3.5rem)` | 1.06 | -0.015em | h2 de seção |
+| `--text-statement` | 28 | 44 | `clamp(1.75rem, 1.417rem + 1.48vw, 2.75rem)` | 1.18 | -0.01em | frase de fecho, citação |
+| `--text-metric` | 40 | 72 | `clamp(2.5rem, 1.833rem + 2.96vw, 4.5rem)` | 0.95 | -0.02em | números que contam (tabular) |
+| `--text-title` | 20 | 24 | `clamp(1.25rem, 1.167rem + 0.37vw, 1.5rem)` | 1.30 | -0.005em | h3, título de item |
+| `--text-lead` | 17 | 22 | `clamp(1.0625rem, 0.958rem + 0.46vw, 1.375rem)` | 1.55 | 0 | parágrafo de abertura |
+| `--text-body` | 16 | 18 | `clamp(1rem, 0.958rem + 0.19vw, 1.125rem)` | 1.65 | 0 | corpo |
+| `--text-body-sm` | 14 | 14 | `0.875rem` | 1.60 | 0 | descrição de item, nota |
+| `--text-label` | 12 | 12 | `0.75rem` | 1 | +0.14em | tag, caixa alta |
+| `--text-eyebrow` | 11 | 11 | `0.6875rem` | 1 | +0.24em | abertura de capítulo, caixa alta |
+| `--text-caption` | 13 | 13 | `0.8125rem` | 1.45 | +0.01em | legenda, crédito, rodapé |
+
+**Bandas de line-height** (para qualquer degrau novo): ≥56px → 0.92–1.0 · 28–56px → 1.04–1.18 ·
+22–28px → 1.2–1.3 · 13–22px → 1.45–1.65 · caixa alta de rótulo → 1.
+
+**Piso de 1.02 sobrepõe a banda quando o display carrega acento.** Em pt-BR o til de `Ã` e a cedilha
+de `Ç` sobem acima da altura de capitular, e a 0.92 a linha de cima os corta — por isso os dois
+degraus do topo ficam em 1.02 e 1.04. A causa e o teste visual são de
+[frontend-design](../frontend-design/type-pairs.md#3-acento-clipado-por-line-height); o valor é daqui.
+
+**Bandas de letter-spacing:** ≥48px → -0.03 a -0.02em · 28–48px → -0.02 a -0.01em · 16–28px → -0.005
+a 0 · <14px em caixa alta → +0.12 a +0.24em. Causa: o tracking padrão da fonte foi desenhado para
+16px. A 64px ele abre buracos entre letras; a 11px em caixa alta as hastes colidem.
+
 ## Bloco `@theme`
 
 > **Este bloco é o ponto de partida de uma página nova, não o estado deste repositório.**
-> `src/styles/index.css` já publica um `@theme` com cinco degraus de tipo (`hero` 34→72,
-> `chapter` 30→52, `statement` 26→52, `lead` 16→20, `eyebrow` 11), ajustados contra a headline
-> real mais longa de cada papel. Colar o bloco abaixo por cima reflui todas as manchetes do site.
+> `src/styles/index.css` já publica um `@theme` com cinco degraus de tipo, ajustados contra a
+> headline real mais longa de cada papel. Colar o bloco abaixo por cima reflui todas as manchetes
+> do site.
 >
 > Num repositório com `@theme`: **acrescente só os degraus que faltam** — `display`, `metric`,
 > `title`, `body`, `body-sm`, `label`, `caption` — e deixe os cinco existentes como estão. Num
 > projeto novo: use o bloco inteiro.
+
+### Os cinco degraus já em produção neste repositório
+
+| Token | Valor em produção | @360 | @1440 | teto |
+|---|---|---|---|---|
+| `--text-hero` | `clamp(2.125rem, 4.5vw, 4.5rem)` | 34px | 64.8px | 72px a 1600 |
+| `--text-chapter` | `clamp(1.875rem, 3.5vw, 3.25rem)` | 30px | 50.4px | 52px |
+| `--text-statement` | `clamp(1.625rem, 3.4vw, 3.25rem)` | 26px | 49px | 52px |
+| `--text-lead` | `clamp(1rem, 1.15vw, 1.25rem)` | 16px | 16.6px | 20px a 1739 |
+| `--text-eyebrow` | `0.6875rem` | 11px | 11px | — |
+
+Todos os cinco são **menores** que a referência de onze degraus do
+[SKILL.md](SKILL.md#1-escala-tipográfica): o teto de cada um foi baixado até a palavra mais longa
+da copy real caber sem hífen. O piso de 16px em `--text-lead` não sobe — abaixo dele o Safari do
+iOS dá zoom ao focar um campo.
 
 ```css
 @import 'tailwindcss';
@@ -128,6 +195,14 @@ redefini-la invalida toda a documentação da biblioteca para quem ler o código
 
 ## Rampa de cor a partir de uma cor de marca
 
+A luminosidade fica fixa por degrau e a croma é modulada — croma constante produz neon nos degraus
+claros e lama nos escuros.
+
+| Degrau | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| L | .97 | .94 | .89 | .82 | .74 | .66 | .58 | .49 | .40 | .31 | .24 |
+| C × base | .14 | .26 | .45 | .68 | .88 | 1.0 | .98 | .88 | .74 | .58 | .44 |
+
 ```css
 @theme inline {
   --color-brand: #e95d79;
@@ -173,6 +248,25 @@ probe.remove()
 
 **Neutros:** duas rampas. A quente sai da mesma matriz com `calc(c * 0.03)` — 2–6% da croma da
 marca. Cinza puro ao lado de uma paleta quente puxa para o verde por contraste simultâneo.
+
+## Pares de contraste medidos
+
+Os mínimos por papel (4.5:1 no corpo, 3:1 em ≥24px e em anel de foco) estão no
+[SKILL.md](SKILL.md#5-cor). Aqui ficam os pares deste projeto, já calculados — use estes em vez de
+estimar de novo.
+
+| Par | Razão | Serve para |
+|---|---|---|
+| `#1f1f1f` sobre `#ffffff` | 16.5:1 | corpo |
+| `#666666` sobre `#ffffff` | 5.74:1 | corpo secundário |
+| `#e95d79` sobre `#ffffff` | **3.33:1** | só ≥24px, ícone e anel de foco. **Nunca corpo** |
+| `#e95d79` sobre `#32151e` | 5.0:1 | corpo sobre o ink |
+| `#f7a5b8` sobre `#32151e` | 8.74:1 | eyebrow e acento sobre o ink |
+| `#f7a5b8` sobre `#ffffff` | 1.90:1 | nada textual — só forma |
+| `#e8b98a` sobre `#32151e` | 9.3:1 | hairline e detalhe (sobre branco dá 1.79:1) |
+
+Sobre o scrim de ink a 0.86, branco a 60% dá 5.1:1, a 55% dá 4.55:1 e a 50% dá 4.05:1 — 60% é o piso
+com margem para texto sobre fotografia.
 
 ## Camada semântica
 
@@ -225,6 +319,16 @@ O acento **troca de degrau** entre as zonas. `--color-rose` sobre branco dá 3.3
 dá 5.0:1; `--color-rose-soft` sobre branco dá 1.90:1. É a mesma cor de marca em dois papéis, não
 duas marcas. Trocar a zona sem trocar o degrau do acento é como a maioria das inversões reprova o
 contraste.
+
+## Padding vertical dentro de um palco
+
+`.chapter__stage` tem 100svh e o padding é relativo ao viewport: `pt-[12svh]` para limpar a
+navegação (≥72px) e `pb-[12svh]` para o cue de scroll.
+
+Use `svh`, **não `vh`**: `vh` resolve contra o viewport *grande* e produziria um padding maior que
+os 12% pedidos justamente no celular com a barra de URL visível, que é o caso que ele existia para
+resolver. Texto vive no `svh`; a mídia (`.chapter__media`) preenche o `lvh`, para que a barra
+retraindo nunca revele uma faixa de fundo.
 
 ## Fora do `@theme`
 
