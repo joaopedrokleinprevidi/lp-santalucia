@@ -1,7 +1,7 @@
 ---
-name: publicar-lp
-description: Use when a finished landing page must go live — secret and gitignore preflight, lp-<slug> repo on GitHub, Vercel deploy by MCP, immutable cache headers, domain DNS, post-deploy checks. Publicar o projeto, subir para o GitHub, colocar no ar, deploy na Vercel, dominio, DNS, cache, build que passa local e quebra na Vercel, entrega da URL ao cliente. Fase 12 do pipeline.
-argument-hint: [nome-do-cliente]
+name: "publicar-lp"
+description: "Use when a finished landing page must go live — secret and gitignore preflight, lp-<slug> repo on GitHub, Vercel deploy by MCP, immutable cache headers, domain DNS, post-deploy checks. Publicar o projeto, subir para o GitHub, colocar no ar, deploy na Vercel, dominio, DNS, cache, build que passa local e quebra na Vercel, entrega da URL ao cliente. Fase 12 do pipeline."
+argument-hint: "[nome-do-cliente]"
 ---
 
 # Publicar a landing page — Fase 12

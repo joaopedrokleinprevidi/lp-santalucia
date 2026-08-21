@@ -1,7 +1,7 @@
 ---
-name: audit-performance
-description: Use when measuring page weight and Core Web Vitals on the production build before deploy. Portao 11c de performance, LCP 2.5s, CLS 0.1, INP 200ms, orcamento de peso em MB por Experience Score, 4G lento, caminho critico, lazy loading, IntersectionObserver, custo de frame sequence, AVIF ou WebP, og:image, fonte com display swap e subset, preload de fonte, Lighthouse local, throttle de CPU 4x, peso no celular.
-argument-hint: [rota] [--fix]
+name: "audit-performance"
+description: "Use when measuring page weight and Core Web Vitals on the production build before deploy. Portao 11c de performance, LCP 2.5s, CLS 0.1, INP 200ms, orcamento de peso em MB por Experience Score, 4G lento, caminho critico, lazy loading, IntersectionObserver, custo de frame sequence, AVIF ou WebP, og:image, fonte com display swap e subset, preload de fonte, Lighthouse local, throttle de CPU 4x, peso no celular."
+argument-hint: "[rota] [--fix]"
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_network_requests, mcp__plugin_playwright_playwright__browser_console_messages
 ---
 

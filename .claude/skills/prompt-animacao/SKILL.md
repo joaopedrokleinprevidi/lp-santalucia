@@ -1,7 +1,7 @@
 ---
-name: prompt-animacao
-description: Use when turning approved stills into Google Flow/Veo motion prompts for a scroll-driven page — clip length, one continuous move, no cut, no shake, no loop, safe area, and the playback technique each section lands on. Fase 8b, produz design/motion-prompts.md. Prompt de animacao, clipe gerado por IA, video de secao, escolha entre loop, scrub e canvas frames, comando ffmpeg de extracao preenchido e tabela de peso em MB.
-argument-hint: [secao] [tecnica-de-destino]
+name: "prompt-animacao"
+description: "Use when turning approved stills into Google Flow/Veo motion prompts for a scroll-driven page — clip length, one continuous move, no cut, no shake, no loop, safe area, and the playback technique each section lands on. Fase 8b, produz design/motion-prompts.md. Prompt de animacao, clipe gerado por IA, video de secao, escolha entre loop, scrub e canvas frames, comando ffmpeg de extracao preenchido e tabela de peso em MB."
+argument-hint: "[secao] [tecnica-de-destino]"
 allowed-tools: Read, Glob, Write
 ---
 

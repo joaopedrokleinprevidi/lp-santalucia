@@ -1,7 +1,7 @@
 ---
-name: copy-conversao
-description: Use when writing the actual landing page copy — headline, eyebrow, body, button label, FAQ — and deciding how many CTAs and where. Fase 6b — tetos de caractere medidos, numero no lugar de adjetivo, estrategia de CTA com WhatsApp, FAQ ordenado pela objecao mais cara, e a proibicao de reaproveitar copy do site antigo ou frase generica do setor. Palavras-chave: copy, headline, eyebrow, texto da secao, CTA, WhatsApp, FAQ, conversao.
-argument-hint: [id-da-secao-ou-"tudo"]
+name: "copy-conversao"
+description: "Use when writing the actual landing page copy — headline, eyebrow, body, button label, FAQ — and deciding how many CTAs and where. Fase 6b — tetos de caractere medidos, numero no lugar de adjetivo, estrategia de CTA com WhatsApp, FAQ ordenado pela objecao mais cara, e a proibicao de reaproveitar copy do site antigo ou frase generica do setor. Palavras-chave: copy, headline, eyebrow, texto da secao, CTA, WhatsApp, FAQ, conversao."
+argument-hint: "[id-da-secao-ou-\x22tudo\x22]"
 ---
 
 # Copy de conversão — Fase 6b

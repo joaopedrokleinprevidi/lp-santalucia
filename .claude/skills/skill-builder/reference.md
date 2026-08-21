@@ -514,7 +514,7 @@ caracteres, independentemente do orçamento.
   `skillListingMaxDescChars`, ou a env `SLASH_COMMAND_TOOL_CHAR_BUDGET` com um número fixo de
   caracteres. Em `skillOverrides`, marcar uma skill como `"name-only"` libera espaço para as outras.
 
-Neste projeto o orçamento é ~16.000 caracteres para o conjunto todo. Com ~24 skills isso dá a
+Neste projeto o orçamento é ~16.000 caracteres para o conjunto todo. Com ~25 skills isso dá a
 regra dura do [SKILL.md](SKILL.md#arquitetura-o-conjunto-é-um-algoritmo-não-uma-pilha): **450
 caracteres por description**. Não é folga — é a média exata. Uma description de 900 chars não
 custa contexto extra: ela **apaga a de outra skill**, escolhida pela frequência de invocação, sem

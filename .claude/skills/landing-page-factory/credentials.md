@@ -37,6 +37,8 @@ O escopo `repo` é o que importa no GitHub — sem ele o `gh` autentica mas não
 | Credencial | O que destrava | Bloqueia o pipeline? | Trava na fase | Como conseguir |
 |---|---|---|---|---|
 | Node ≥20 + git | build, pipeline de imagem, transcode de vídeo | Sim | 10 — implementação | [nodejs.org](https://nodejs.org) (LTS) e [git-scm.com](https://git-scm.com) |
+| **AIX Downloader** (extensão do Chrome) | baixar o Instagram do cliente de uma vez | Sim — sem posts a Fase 2 vira chute | **0b — coleta** | Grátis na Chrome Web Store. Roteiro de uso: [coleta-dados](../coleta-dados/SKILL.md) Rota 3 |
+| **MarkDownload** (extensão do Chrome) | salvar o site atual como texto limpo | Não — eu leio página a página com `WebFetch` | **0b — coleta** | Grátis na Chrome Web Store. Roteiro de uso: [coleta-dados](../coleta-dados/SKILL.md) Rota 2 |
 | GitHub via `gh auth login` | criação do repositório `lp-<slug>` e o push | Não antes da 12 | 12 — publicar | Conta grátis + `gh auth login` |
 | **Vercel via MCP** (preferido) | criar projeto, publicar, ler log de build e erro de runtime, consultar domínio | Não antes da 12 | 12 — publicar | `claude mcp add` + aprovar no navegador |
 | Vercel via CLI (alternativa) | o mesmo, digitado à mão | Não antes da 12 | 12 — publicar | `npm i -g vercel` + `vercel login` |
@@ -319,6 +321,8 @@ Por isso o padrão é `--private`. Quando em dúvida, fica privado.
 
 | Falta | O que acontece | Contorno | Quando resolver |
 |---|---|---|---|
+| AIX Downloader | o Instagram não vem, e ele é a maior fonte de identidade visual | salvar post a post à mão, ou pedir os originais ao cliente | **antes da Fase 0b** |
+| MarkDownload | o site atual não vem de uma vez | eu leio página a página com `WebFetch`; só pesa quando o site tem blog | antes da Fase 0b |
 | Node ≥20 | nada é construído | nenhum | antes da Fase 10 |
 | GitHub | o código fica só na sua máquina | nenhum — a Vercel precisa do repositório | antes da Fase 12 |
 | Vercel (MCP e CLI) | não há URL no ar | nenhum | antes da Fase 12 |

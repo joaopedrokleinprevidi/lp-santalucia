@@ -1,7 +1,7 @@
 ---
-name: landing-motion-expert
-description: Use when routing a motion task to the right specialist, defining or auditing a project's motion language, or setting the per-section motion budget. Fase 10 — dona dos tokens de duracao, easing, stagger, distancia e story unit; roteia para gsap-scrolltrigger-expert, video-decisao e motion-ui-expert. Palavras-chave: linguagem de motion, jank, animacao inconsistente entre secoes, variedade de entrada, orcamento de motion, quanto tempo dura.
-argument-hint: [secao-ou-componente]
+name: "landing-motion-expert"
+description: "Use when routing a motion task to the right specialist, defining or auditing a project's motion language, or setting the per-section motion budget. Fase 10 — dona dos tokens de duracao, easing, stagger, distancia e story unit; roteia para gsap-scrolltrigger-expert, video-decisao e motion-ui-expert. Palavras-chave: linguagem de motion, jank, animacao inconsistente entre secoes, variedade de entrada, orcamento de motion, quanto tempo dura."
+argument-hint: "[secao-ou-componente]"
 ---
 
 # Linguagem de motion e roteamento — Fase 10

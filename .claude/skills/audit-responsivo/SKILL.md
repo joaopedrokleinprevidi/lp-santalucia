@@ -1,7 +1,7 @@
 ---
-name: audit-responsivo
-description: Use when auditing a finished implementation for mobile, tablet and viewport behaviour, before the accessibility gate. Portao 11a de responsividade, breakpoint, 375px sem scroll horizontal, overflow, texto abaixo de 16px, alvo de toque 44px, reflow 320px, zoom bloqueado, 100svh, densidade de motion por breakpoint, pin que vira sticky, parallax com amplitude reduzida, trilho horizontal que vira vertical, razao scrollMobile/scroll.
-argument-hint: [rota-ou-componente] [--fix]
+name: "audit-responsivo"
+description: "Use when auditing a finished implementation for mobile, tablet and viewport behaviour, before the accessibility gate. Portao 11a de responsividade, breakpoint, 375px sem scroll horizontal, overflow, texto abaixo de 16px, alvo de toque 44px, reflow 320px, zoom bloqueado, 100svh, densidade de motion por breakpoint, pin que vira sticky, parallax com amplitude reduzida, trilho horizontal que vira vertical, razao scrollMobile/scroll."
+argument-hint: "[rota-ou-componente] [--fix]"
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_take_screenshot
 ---
 

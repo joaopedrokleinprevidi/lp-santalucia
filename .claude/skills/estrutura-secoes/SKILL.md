@@ -1,7 +1,7 @@
 ---
-name: estrutura-secoes
-description: Use when deciding a landing page section order, narrative archetype, emotional pacing and scroll budget per section. Fase 6a — escolhe o arquetipo (urgencia, transformacao, credencial, produto), ordena as secoes pela queda das objecoes, define o beat de cada uma e converte share em scroll/scrollMobile. Palavras-chave: estrutura da landing, ordem das secoes, storytelling, pacing, quanto scroll cada secao recebe, story map.
-argument-hint: [tipo-de-negocio] [o-que-o-visitante-precisa-decidir]
+name: "estrutura-secoes"
+description: "Use when deciding a landing page section order, narrative archetype, emotional pacing and scroll budget per section. Fase 6a — escolhe o arquetipo (urgencia, transformacao, credencial, produto), ordena as secoes pela queda das objecoes, define o beat de cada uma e converte share em scroll/scrollMobile. Palavras-chave: estrutura da landing, ordem das secoes, storytelling, pacing, quanto scroll cada secao recebe, story map."
+argument-hint: "[tipo-de-negocio] [o-que-o-visitante-precisa-decidir]"
 ---
 
 # Estrutura de seções — Fase 6a

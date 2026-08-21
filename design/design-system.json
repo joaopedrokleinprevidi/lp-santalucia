@@ -253,6 +253,34 @@
     ]
   },
 
+  "canaisDigitais": {
+    "$note": "Bloco separado de propósito. Nada aqui está legível num asset ou documento do cliente — tudo veio de busca pública na Fase 0b (skill coleta-dados, rota 1, execução de 2026-08-20). Por isso não está em 'facts': procedência 'web:' não vira fato sem confirmação do cliente. Serve principalmente para o campo sameAs do JSON-LD, que só deve ser preenchido depois do 'confirmed: true'.",
+    "siteOficial": {
+      "value": "https://veterinariasantalucia24h.com.br",
+      "source": "web: resultado de busca (Fase 0b, rota 1)",
+      "confirmed": false,
+      "action": "Confirmar com o cliente qual dos dois domínios é o canônico hoje."
+    },
+    "sitePetCenter": {
+      "value": "https://petcentersantalucia.com.br",
+      "source": "web: resultado de busca (Fase 0b, rota 1)",
+      "confirmed": false,
+      "action": "Confirmar se é domínio ativo, redirecionamento ou site legado."
+    },
+    "facebook": {
+      "value": "https://facebook.com/petcenter.stalucia24h",
+      "source": "web: resultado de busca (Fase 0b, rota 1)",
+      "confirmed": false,
+      "action": "Confirmar que o perfil é oficial e está ativo antes de linkar no rodapé."
+    },
+    "sameAsCandidatos": [
+      "https://veterinariasantalucia24h.com.br",
+      "https://petcentersantalucia.com.br",
+      "https://facebook.com/petcenter.stalucia24h"
+    ],
+    "instagram": { "value": null, "source": null, "confirmed": false, "action": "Ainda não encontrado. Solicitar o handle ao cliente." }
+  },
+
   "inferences": [
     { "claim": "As famílias tipográficas escolhidas (Playfair Display + Plus Jakarta Sans) são substitutas de classe, não as fontes originais da marca.", "basis": "Impossível extrair arquivo de fonte de JPEG; classificação feita pelas formas das letras.", "confidence": "alta para a classe, média para a família exata", "action": "Confirmar com o cliente se existe manual de marca com as fontes originais." },
     { "claim": "O creme #F7F4EF é o fundo institucional.", "basis": "Média dos 4 fundos de post medidos; variam entre #E9E9E9 e #F9F3F2.", "confidence": "média — a variação sugere que os posts foram feitos em momentos diferentes sem token fixo.", "action": "Propor #F7F4EF como padronização." },
@@ -261,9 +289,23 @@
 
   "unverified": [
     { "item": "Conflito: o FAQ do site atual diz 'foco principal em cães e gatos, consulte-nos para outras espécies', mas o post de /assets anuncia 'Especialistas em pets não convencionais' com atendimento 24h.", "impact": "alto — é um diferencial forte se confirmado, e uma promessa falsa se não.", "action": "Confirmar com o cliente antes de publicar. O post é mais recente e mais específico, então a hipótese é que o FAQ do site está desatualizado." },
-    { "item": "E-mail de contato e link direto do WhatsApp não aparecem em nenhum asset.", "action": "Solicitar. O WhatsApp é o canal de conversão principal desta LP e não existe número confirmado para ele." },
+    {
+      "item": "WhatsApp: existe um candidato encontrado em fonte pública, ainda não confirmado pelo cliente. E-mail de contato continua sem nenhuma fonte.",
+      "candidate": "(54) 99967-4276",
+      "source": "web: resultado de busca citando diretório de nicho (Petlove / rede credenciada) e agregadores locais",
+      "confirmed": false,
+      "foundBy": "Fase 0b — skill coleta-dados, rota 1 (busca web), execução de 2026-08-20",
+      "impact": "alto — é o canal de conversão principal da LP.",
+      "action": "Confirmar o número com o cliente antes de virar o CTA da página. Procedência web não vira fato: enquanto não houver confirmação, não escrever este número em botão, link wa.me ou JSON-LD.",
+      "$note": "Permanece em unverified de propósito. Só migra para facts com confirmação do cliente."
+    },
     { "item": "Estacionamento: o site diz 'vagas próximas', a foto da fachada mostra vagas na calçada em frente. Não há estacionamento próprio evidente.", "action": "Ajustar a copy para não prometer estacionamento privativo." },
     { "item": "Nomes e CRMV da equipe clínica.", "action": "Necessário se a LP tiver seção de equipe. Sem isso, não gerar rostos — usar as fotos reais ou nenhuma." },
-    { "item": "Redes sociais listadas (Instagram, Facebook, YouTube, LinkedIn) sem URLs.", "action": "Solicitar handles para o rodapé." }
+    {
+      "item": "Redes sociais listadas (Instagram, Facebook, YouTube, LinkedIn) sem URLs no material do cliente. A Fase 0b encontrou em busca pública dois domínios e um Facebook — estão em 'canaisDigitais', todos com confirmed: false.",
+      "source": "web: resultado de busca (Fase 0b, rota 1)",
+      "confirmed": false,
+      "action": "Confirmar com o cliente os canais de 'canaisDigitais' e solicitar o handle do Instagram, que continua sem fonte. Só depois preencher o rodapé e o sameAs do JSON-LD."
+    }
   ]
 }

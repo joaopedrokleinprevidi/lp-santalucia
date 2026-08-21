@@ -1,7 +1,7 @@
 ---
-name: estudo-assets
-description: Use when a folder of client assets must be inventoried and every single image actually opened and read before any design decision. Fase 1 do pipeline: le cada imagem uma por uma, nunca classifica pelo nome do arquivo, classifica por tipo e fato que carrega, e da dois vereditos por arquivo — serve na pagina e em que largura, e serve como referencia para anexar no ChatGPT. Triagem de asset inutil. Produz design/inventario.json.
-argument-hint: [pasta-de-assets]
+name: "estudo-assets"
+description: "Use when a folder of client assets must be inventoried and every single image actually opened and read before any design decision. Fase 1 do pipeline: le cada imagem uma por uma, nunca classifica pelo nome do arquivo, classifica por tipo e fato que carrega, e da dois vereditos por arquivo — serve na pagina e em que largura, e serve como referencia para anexar no ChatGPT. Triagem de asset inutil. Produz design/inventario.json."
+argument-hint: "[pasta-de-assets]"
 allowed-tools: Read, Glob, Write, Edit, Bash(node *), Bash(ls *), Bash(mkdir *)
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read, Glob, Write, Edit, Bash(node *), Bash(ls *), Bash(mkdir *)
 |---|---|
 | **ENTRADA** | A pasta `assets-source/`, e `design/briefing.json` para saber o nicho e o nome oficial |
 | **SAÍDA** | `design/inventario.json` — uma entrada por arquivo, com dois vereditos independentes |
-| **ANTES** | `briefing-cliente` (Fase 0) |
+| **ANTES** | `coleta-dados` (Fase 0b), que encheu `assets-source/` com o Instagram baixado, o logo do cliente e as fotos do celular. `briefing-cliente` (Fase 0) fixou o nicho e o nome oficial |
 | **DEPOIS** | `brand-dna-extractor` (Fase 2), que amostra cor e forma dos arquivos aprovados aqui |
 
 O inventário é feito **uma vez, aqui**. `brand-dna-extractor` lê `inventario.json` em vez de

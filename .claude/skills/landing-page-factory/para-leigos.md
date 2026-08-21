@@ -7,7 +7,8 @@ Este documento explica o que acontece no meio, o que vão te pedir, e — princi
 
 ## O seu trabalho inteiro, em quatro linhas
 
-1. Trazer os dados da empresa e as imagens que o cliente tiver.
+1. Baixar o material do cliente seguindo o roteiro que eu entrego na Fase 0b — o que está na
+   internet aberta eu busco sozinho.
 2. Dizer "gere".
 3. Depois, colar prompts no ChatGPT para gerar as imagens e no Google Flow para animá-las.
 4. Aprovar o login no navegador quando uma credencial for pedida.
@@ -16,8 +17,9 @@ Só isso. Não existe passo 5.
 
 ## Como começar, literalmente
 
-Crie uma pasta para o projeto, jogue o material do cliente dentro dela numa subpasta chamada
-`assets-source/`, abra o Claude Code **nessa pasta** e escreva:
+Crie uma pasta para o projeto, jogue dentro dela numa subpasta chamada `assets-source/` o material
+que o cliente já te mandou — se não te mandou nada ainda, deixe a subpasta vazia mesmo, é a Fase 0b
+que vai enchê-la. Abra o Claude Code **nessa pasta** e escreva:
 
 ```
 /landing-page-factory assets-source "Nome do Cliente"
@@ -33,6 +35,8 @@ para o cliente Fulano". O efeito é o mesmo.
 | O que **VOCÊ** faz | O que **EU** faço |
 |---|---|
 | Junta a pasta de assets e responde o briefing | Leio cada arquivo, meço as cores, monto o design system |
+| Instala duas extensões e baixa o Instagram e o site do cliente | Busco o Google da empresa, o endereço, o horário e as avaliações |
+| Pede ao cliente o logo em vetor e o WhatsApp confirmado | Anoto de onde veio cada dado e marco o que ainda precisa de confirmação |
 | Confirma dados de contato com o cliente | Pesquiso o nicho, os concorrentes e as avaliações reais |
 | Diz "gere" | Escrevo toda a copy, do zero, e decido a ordem das seções |
 | Cola prompt no ChatGPT e salva o PNG | Escrevo os prompts, decido quais arquivos você anexa e onde salvar |
@@ -48,24 +52,29 @@ confirmar dado com o cliente.
 
 **Obrigatório:**
 
-1. **A pasta `assets-source/` com o material do cliente.** Logo, fotos da loja, fotos do trabalho
-   feito, posts do Instagram, material impresso. Não precisa estar organizado, e não precisa estar
-   bonito — foto feia de lugar real vale mais que render bonito de lugar que não existe. O
-   tratamento é comigo. O nome da pasta importa: é dela que o site puxa as imagens, e é ela que
-   fica de fora do GitHub para o material cru do cliente não virar público.
+1. **A pasta `assets-source/`.** Jogue dentro o que o cliente já te deu: logo, fotos da loja, fotos
+   do trabalho feito, posts do Instagram, material impresso. Não precisa estar organizado, e não
+   precisa estar bonito — foto feia de lugar real vale mais que render bonito de lugar que não
+   existe. O tratamento é comigo. O nome da pasta importa: é dela que o site puxa as imagens, e é
+   ela que fica de fora do GitHub para o material cru do cliente não virar público. **Ela pode
+   começar vazia** — a Fase 0b te dá o roteiro de como enchê-la.
 
-2. **Os dados de contato, confirmados pelo cliente.** Telefone, **WhatsApp com DDD** (quase sempre
-   é um número diferente do fixo), endereço com CEP, horário incluindo feriado. "Confirmado" quer
-   dizer que o cliente olhou e disse que está certo — não que você achou no Google. Um dígito
-   errado no telefone e o site inteiro não serve.
+2. **Duas extensões do Chrome, as duas grátis:** AIX Downloader e MarkDownload. São elas que
+   baixam o Instagram e o site do cliente na Fase 0b. Instale antes, leva um minuto.
 
-3. **Conta no GitHub e na Vercel.** As duas grátis. O passo a passo está em
+3. **Os dados de contato, confirmados pelo cliente.** Telefone, **WhatsApp com DDD** (quase sempre
+   é um número diferente do fixo), endereço com CEP, horário incluindo feriado. Caçar isso não é
+   com você: eu busco no Google da empresa na Fase 0b e te devolvo a lista para o cliente olhar.
+   "Confirmado" quer dizer que o cliente olhou e disse que está certo — não que apareceu no Google.
+   Um dígito errado no telefone e o site inteiro não serve.
+
+4. **Conta no GitHub e na Vercel.** As duas grátis. O passo a passo está em
    [credentials.md](credentials.md).
 
 **Para as imagens e animações:**
 
-4. **Acesso ao ChatGPT** (ou outro gerador de imagem), na Fase 9.
-5. **Acesso ao Google Flow** (ou Runway, Kling, Luma), também na Fase 9. Este é opcional — sem
+5. **Acesso ao ChatGPT** (ou outro gerador de imagem), na Fase 9.
+6. **Acesso ao Google Flow** (ou Runway, Kling, Luma), também na Fase 9. Este é opcional — sem
    ele a página usa as imagens paradas e continua boa.
 
 ---
@@ -73,10 +82,13 @@ confirmar dado com o cliente.
 ## As 13 fases
 
 Os números abaixo são os mesmos do [SKILL.md](SKILL.md) — uma fase, um número, nos dois arquivos.
+São 14 linhas para 13 fases porque a Fase 0 tem duas metades: você conta o que já sabe (0), e
+depois o material é garimpado (0b).
 
 | # | Fase | O que sai | Você faz algo? |
 |---|---|---|---|
 | 0 | Briefing e credenciais | `briefing.json` começa | **Sim** — preenche o briefing, aprova os logins |
+| 0b | Coleta de dados | `coleta.json` + a pasta de assets cheia | **Sim** — baixa o Instagram e o site, pede o resto ao cliente |
 | 1 | Leitura dos assets | inventário de cada arquivo | Não |
 | 2 | DNA da marca | `design-system.json` | Não |
 | 3 | Auditoria de lacunas | `lacunas.md` | **Sim** — responde uma rodada única de perguntas |
@@ -90,8 +102,8 @@ Os números abaixo são os mesmos do [SKILL.md](SKILL.md) — uma fase, um núme
 | 11 | Auditoria | aprovação ou reprovação | Não — mas pode voltar para a 10 |
 | 12 | Publicar | repositório + site no ar | **Sim** — confirma que quer publicar |
 
-Nove das treze fases você não faz nada. As quatro onde você aparece — 0, 3, 6 e 9, mais a
-confirmação da 12 — estão detalhadas abaixo.
+Em oito das quatorze linhas você não faz nada. As cinco onde você aparece — 0, 0b, 3, 6 e 9 —,
+mais a confirmação da 12, estão detalhadas abaixo.
 
 ### Fase 0 — Briefing e credenciais
 
@@ -101,6 +113,55 @@ problema, é exatamente o que a Fase 3 existe para caçar.
 
 Ao mesmo tempo, é checado se o GitHub, a Vercel e o Node estão prontos. Descobrir na hora de
 publicar que faltava um acesso custa o projeto inteiro em retrabalho.
+
+### Fase 0b — O garimpo
+
+Metade do briefing já está na internet aberta, e essa metade é minha: o Google da empresa
+(endereço, telefone, horário, nota, número de avaliações), o texto do site atual, as avaliações
+uma por uma e três a cinco concorrentes da mesma cidade. Você não copia nada disso à mão.
+
+A outra metade eu não alcanço, e por motivos concretos: o Instagram exige login e bloqueia leitura
+automática, o logo bom está no e-mail do designer, e as fotos do interior estão no celular do
+cliente. Essa metade é sua.
+
+**Instale duas extensões do Chrome.** As duas são grátis:
+
+| Extensão | Para quê |
+|---|---|
+| **AIX Downloader** | Baixa de uma vez todas as imagens e vídeos de uma página. É assim que o Instagram vem |
+| **MarkDownload** | Salva a página inteira como texto limpo, sem menu e sem rodapé. É assim que o site atual vem |
+
+**O Instagram, passo a passo:**
+
+1. Abra o perfil do cliente no Chrome, no computador.
+2. **Role até o fim do feed.** Este é o passo que todo mundo pula e é o que estraga a coleta: o
+   Instagram só carrega na página o que você já passou pela tela. Clicar na extensão depois de
+   rolar três telas baixa 12 posts — e eu vou abrir esses 12, achar que são a marca inteira, e
+   montar o design system em cima do que o cliente postou neste mês.
+3. Clique no ícone da extensão, selecione tudo e baixe.
+4. Salve em `assets-source/instagram/`.
+
+Quantos posts: os **50 mais recentes**, ou o ano inteiro se ele posta pouco. Abaixo de 20 não dá
+para ver o padrão da marca; acima de 100 é peso morto, porque a Fase 1 abre um por um.
+
+Nada de print de tela: o print perde resolução e ainda traz a barra de status junto. Arquivo
+original, sempre.
+
+**O site atual:** abra cada página que interessa — home, serviços, sobre, FAQ, contato e os posts
+do blog que ainda fazem sentido —, clique no MarkDownload e salve em `assets-source/site/`.
+
+**O que você pede ao cliente**, porque nada disso está na internet:
+
+- O **logo em vetor** (`.ai`, `.svg`, `.pdf`) ou o maior PNG que ele tiver. O do site tem 200
+  pixels: foi feito para carregar rápido, não para aparecer nítido numa tela de celular novo
+- O **WhatsApp comercial**, confirmado por ele, com DDD. É o botão principal da página
+- Fotos do interior, da equipe e do trabalho sendo feito. Foto de celular serve
+- CNPJ, registro do conselho, faixa de preço, e **o que a empresa não faz**
+
+*Você faz:* instala, baixa, salva e manda o pedido ao cliente. Eu busco o resto e escrevo o
+`coleta.json`, onde tudo que veio da web fica marcado como **ainda não confirmado** — inclusive o
+telefone e o horário. É exatamente o campo que o cliente esqueceu de atualizar em 2019, e ele volta
+como pergunta na Fase 3.
 
 ### Fase 1 — Leitura dos assets
 

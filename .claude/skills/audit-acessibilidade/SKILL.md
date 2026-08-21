@@ -1,7 +1,7 @@
 ---
-name: audit-acessibilidade
-description: Use when auditing an interface for keyboard, screen reader and WCAG AA compliance after the responsive gate. Portao 11b de acessibilidade, contraste 4.5:1 e 3:1, ordem de foco, focus-visible, skip link, armadilha de foco, semantica, hierarquia de headings, h1 unico, landmark, alt text util, aria-hidden, role=img, nome acessivel, prefers-reduced-motion, scrim sobre video, leitor de tela, navegacao por teclado, WCAG AA.
-argument-hint: [rota-ou-componente] [--fix]
+name: "audit-acessibilidade"
+description: "Use when auditing an interface for keyboard, screen reader and WCAG AA compliance after the responsive gate. Portao 11b de acessibilidade, contraste 4.5:1 e 3:1, ordem de foco, focus-visible, skip link, armadilha de foco, semantica, hierarquia de headings, h1 unico, landmark, alt text util, aria-hidden, role=img, nome acessivel, prefers-reduced-motion, scrim sobre video, leitor de tela, navegacao por teclado, WCAG AA."
+argument-hint: "[rota-ou-componente] [--fix]"
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_take_screenshot
 ---
 

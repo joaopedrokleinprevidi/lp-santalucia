@@ -1,7 +1,7 @@
 ---
-name: video-to-website
-description: Use when turning one or more videos (MP4/MOV, filmed or AI-generated in Google Flow/Veo/Runway) into a scroll-driven landing page where scroll position controls playback frame by frame. Covers frame extraction, canvas rendering, choreography and the React/Vite port.
-argument-hint: [caminho-do-video] [nome-da-secao]
+name: "video-to-website"
+description: "Use when turning one or more videos (MP4/MOV, filmed or AI-generated in Google Flow/Veo/Runway) into a scroll-driven landing page where scroll position controls playback frame by frame. Covers frame extraction, canvas rendering, choreography and the React/Vite port."
+argument-hint: "[caminho-do-video] [nome-da-secao]"
 ---
 
 # Video to Scroll-Driven Website

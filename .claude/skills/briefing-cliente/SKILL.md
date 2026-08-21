@@ -1,7 +1,7 @@
 ---
-name: briefing-cliente
-description: Use when a landing page project is starting and you must check credentials and collect the client briefing before any asset or design work. Fase 0 do pipeline: checa node, git, gh, vercel e gerador de imagem; entrega as tres listas do que pedir ao cliente (bloqueia, piora, enriquece) com o porque de cada campo; template de briefing em linguagem de leigo. Produz design/briefing.json.
-argument-hint: [nome-do-cliente]
+name: "briefing-cliente"
+description: "Use when a landing page project is starting and you must check credentials and collect the client briefing before any asset or design work. Fase 0 do pipeline: checa node, git, gh, vercel e gerador de imagem; entrega as tres listas do que pedir ao cliente (bloqueia, piora, enriquece) com o porque de cada campo; template de briefing em linguagem de leigo. Produz design/briefing.json."
+argument-hint: "[nome-do-cliente]"
 allowed-tools: Read, Write, Edit, Glob, AskUserQuestion, Bash(mkdir *), Bash(node --version), Bash(git --version), Bash(gh auth status), Bash(vercel whoami), Bash(claude mcp list)
 ---
 
@@ -12,13 +12,14 @@ allowed-tools: Read, Write, Edit, Glob, AskUserQuestion, Bash(mkdir *), Bash(nod
 | **ENTRADA** | Nada. É o início do pipeline: só a pasta do projeto e o dev |
 | **SAÍDA** | `design/briefing.json` com `meta`, `credentials`, `business`, `services`, `doesNotOffer`, `differentiators`, `socialProof`, `pricing` — e a pasta `assets-source/` com o material do cliente dentro |
 | **ANTES** | Nenhuma |
-| **DEPOIS** | `estudo-assets` (Fase 1), que lê `assets-source/` |
+| **DEPOIS** | `coleta-dados` (Fase 0b), que garimpa na web o que ficou em branco e enche `assets-source/` |
 
 O dev é leigo. O trabalho dele é trazer o material, dizer "gere", colar prompts no ChatGPT e no
 Google Flow, e aprovar login quando pedido. Ele não sabe o que a página vai precisar — então esta
 skill não entrega um formulário e espera. Ela **explica o porquê de cada campo, pede tudo de uma
-vez, e aceita campo em branco.** Campo vazio aqui não é problema: é exatamente o que
-`auditoria-dados` existe para caçar, depois que os assets já responderam metade.
+vez, e aceita campo em branco.** Campo vazio aqui não é problema: metade dele a Fase 0b garimpa
+sozinha em fonte pública, e o que sobrar é o que `auditoria-dados` existe para caçar, depois que os
+assets já responderam.
 
 Antes de qualquer coisa, fixe a pasta. O projeto inteiro vive num diretório só, e é o diretório em
 que a sessão já está:
@@ -51,6 +52,11 @@ claude mcp list     # procure a linha do servidor vercel
 | `vercel whoami` falha | só o `--prod` | Não — trava a Fase 12 | `vercel login` na publicação |
 | Sem gerador de imagem | as imagens de seção, ou seja, a página | **Sim, na prática** | Confirmar agora que ele tem ChatGPT ou equivalente |
 | Sem Google Flow | as animações | Não | A LP funciona com stills; os clipes viram melhoria |
+| Sem **AIX Downloader** e **MarkDownload** no Chrome | o Instagram e o site do cliente na Fase 0b | Não aqui — trava a 0b, que é a fase seguinte | Peça que instale as duas **agora**, junto com o resto. São grátis e levam um minuto, e a 0b começa em seguida |
+
+As duas extensões entram nesta checagem de propósito: elas são necessárias na **fase seguinte**, e
+mandar o dev interromper a 0b para ir instalar extensão é o mesmo atrito que a checagem de
+credencial existe para evitar. Ele instala tudo numa sessão só.
 
 Passo a passo de instalação, o que fazer quando o navegador não abre e o que cada credencial
 destrava por fase: [credentials.md da factory](../landing-page-factory/credentials.md). Não repita
@@ -69,6 +75,13 @@ atrás não vale nada: o token do `gh` expira e ninguém avisa.
 Entregue o [briefing-template.md](briefing-template.md). Ele é escrito em linguagem de leigo, campo
 por campo, com exemplo preenchido ao lado de cada um. O dev preenche o que souber e deixa em branco
 o que não souber.
+
+**Não pergunte ao dev o que a Fase 0b garimpa.** Endereço, telefone, horário, categoria, nota do
+Google, handles das redes, lista de serviços e o texto do site atual saem de fonte pública em
+segundos, e `coleta-dados` roda logo depois desta fase. Mandar o dev ligar para o cliente para
+copiar o que está no perfil do Google queima a paciência dele no primeiro dia — e ainda devolve o
+mesmo dado desatualizado. Esses campos ficam em branco aqui, chegam pela 0b como `web:`, e viram
+uma pergunta de confirmação na Fase 3, quando já se sabe o que a web respondeu.
 
 O que segue é o *porquê* de cada campo, para você usar ao explicar. Um dev que entende para que
 serve o CEP traz o CEP; um dev que só vê um formulário pula o campo.
@@ -94,6 +107,8 @@ vira ilustração. O dev leigo costuma achar que "as fotos são feias demais". T
 feia de lugar real vale mais que render bonito de lugar inexistente, e o tratamento é nosso. O piso
 praticável é 1 logo, 2 fotos do local, 3 do trabalho feito e 2 posts com a redação do cliente;
 abaixo disso, a pergunta certa é "o cliente consegue tirar dez fotos de celular esta semana?".
+Esse piso é conferido no portão da Fase 0b, não aqui: o material entra pelo roteiro de garimpo —
+Instagram baixado com extensão, logo pedido ao cliente — e não pelo formulário.
 
 ### Nível 2 — PIORA A LP SE FALTAR
 
@@ -165,11 +180,16 @@ Os blocos `assets` (escrito por `estudo-assets` em `inventario.json`) e `conflic
 `assumptions`, `unverified` (escritos por `auditoria-dados`) não são preenchidos aqui. Crie-os
 vazios e siga.
 
+`design/coleta.json`, escrito pela Fase 0b, é mesclado neste arquivo depois — é de lá que vem quase
+todo campo `web:`. A mesclagem não promove procedência: `web:` continua `web:` e `confirmed` continua
+`false` até o cliente dizer que está certo.
+
 ## Fronteira com as skills vizinhas
 
 | Pergunta | Skill dona |
 |---|---|
 | "O cliente tem acesso e o que ele diz que é?" | **`briefing-cliente`** (aqui) |
+| "O que dá para garimpar em fonte pública?" | `coleta-dados`, Fase 0b |
 | "O que os arquivos mostram e quais servem?" | `estudo-assets`, Fase 1 |
 | "De que cor e forma a marca é feita?" | `brand-dna-extractor`, Fase 2 |
 | "O que falta e o que se contradiz?" | `auditoria-dados`, Fase 3 |
@@ -182,13 +202,14 @@ ler queima a única rodada de perguntas com dados que estavam na placa da fachad
 - [ ] `node -e "JSON.parse(require('fs').readFileSync('design/briefing.json','utf8'))"` sai limpo
 - [ ] `credentials` preenchido com `checkedAt` de hoje
 - [ ] O dev confirmou que tem acesso a um gerador de imagem
-- [ ] `assets-source/` existe e tem pelo menos um logo dentro
+- [ ] `assets-source/` existe (encher é trabalho da Fase 0b; vazia aqui não reprova)
 - [ ] Todo campo de `business` preenchido tem `source`; o que ninguém informou está `null`, não chutado
 - [ ] `whatsapp` e `phone` têm valores diferentes, ou o dev confirmou por escrito que são o mesmo
 - [ ] Nenhum token foi digitado no chat ou escrito em arquivo do projeto
 
 Reprovou por falta de `gh` ou `vercel`: não bloqueia agora — anote a fase de trava e siga. Reprovou
-por falta de assets: bloqueia. Sem asset, a Fase 2 vira chute.
+por falta de assets: também não bloqueia aqui, porque a Fase 0b existe para isso. Bloqueia se a 0b
+terminar sem logo e sem fotos: sem asset, a Fase 2 vira chute.
 
 ## Anti-patterns
 
@@ -196,6 +217,9 @@ por falta de assets: bloqueia. Sem asset, a Fase 2 vira chute.
   cliente para de atender. Um pedido, o template inteiro.
 - **Insistir num campo em branco** — o dev leigo frequentemente não sabe mesmo. Deixe vazio; a Fase
   3 pergunta uma vez só, já sabendo o que os assets responderam.
+- **Perguntar o que está no perfil do Google** — endereço, horário, nota e categoria a Fase 0b lê em
+  segundos. Perguntado aqui, vira telefonema, volta desatualizado e ainda ocupa a linha do formulário
+  que deveria estar caçando o que só o cliente sabe.
 - **Preencher `whatsapp` com o telefone fixo** — o botão principal da página abre uma conversa que
   ninguém lê, e ninguém descobre por semanas.
 - **Copiar copy do site atual para o briefing** — o site atual é fonte de fato e de conflito. A copy
@@ -210,10 +234,11 @@ por falta de assets: bloqueia. Sem asset, a Fase 2 vira chute.
 
 ## Handoff
 
-`design/briefing.json` é lido, em ordem, por `estudo-assets` (que escreve o inventário ao lado, sem
-tocar neste arquivo), `brand-dna-extractor`, `auditoria-dados`, `niche-research`, `estrutura-secoes`
-e `copy-conversao` (serviços, diferenciais e `doesNotOffer`, que define o que a copy não pode
-prometer) e a fase de implementação, onde contato, horário e endereço viram JSON-LD.
+`design/briefing.json` é lido, em ordem, por `coleta-dados` (que vê o que ficou em branco e sai
+buscar), `estudo-assets` (que escreve o inventário ao lado, sem tocar neste arquivo),
+`brand-dna-extractor`, `auditoria-dados`, `niche-research`, `estrutura-secoes` e `copy-conversao`
+(serviços, diferenciais e `doesNotOffer`, que define o que a copy não pode prometer) e a fase de
+implementação, onde contato, horário e endereço viram JSON-LD.
 
 Ele é **referenciado, nunca copiado**. Um telefone corrigido na Fase 3 propaga sozinho; um telefone
 colado em cinco arquivos vira cinco versões do negócio, e a página publica a errada.

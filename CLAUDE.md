@@ -19,7 +19,8 @@ Every implementation MUST follow this order. The numbering is the one in
 disagrees with it, this list is the one that is wrong.
 
 ```
-0  briefing-cliente → 1 estudo-assets → 2 brand-dna-extractor → 3 auditoria-dados
+0  briefing-cliente → 0b coleta-dados (I harvest the public web, the dev downloads
+   what I cannot reach) → 1 estudo-assets → 2 brand-dna-extractor → 3 auditoria-dados
    → 4 niche-research (if there is a site, an Instagram or a local competitor)
 5  creative-direction-expert (pass 1)
 6a estrutura-secoes → 6b copy-conversao
@@ -47,13 +48,14 @@ verification gate between phases.
 
 # Skill Roster
 
-Twenty-four skills, one layer each. A skill that decides in two layers is two skills.
+Twenty-five skills, one layer each. A skill that decides in two layers is two skills.
 
 ## Entry — phases 0 to 4
 
 | Skill | Owns | Produces |
 |---|---|---|
 | `briefing-cliente` | Credential preflight, and the three lists of what to ask the client: what blocks, what hurts, what enriches | `design/briefing.json` + `assets-source/` |
+| `coleta-dados` | The split between what a public source already answers and what only the dev can download | `design/coleta.json` + `assets-source/` filled |
 | `estudo-assets` | Every image opened and read one by one, with two verdicts per file | `design/inventario.json` |
 | `brand-dna-extractor` | Measuring the brand from its real assets, colour sampled pixel by pixel | `design/design-system.json` |
 | `auditoria-dados` | What is still missing or contradictory, in one consolidated round | `design/lacunas.md` |
@@ -540,6 +542,26 @@ Phase 0. Nothing starts before it.
 
 Asks once. The third phone call to the client is the one that stops being answered.
 
+Asks nothing that phase 0b can harvest from a public source.
+
+---
+
+## coleta-dados
+
+Responsible for
+
+- the split: what I harvest with WebSearch and WebFetch, what only the dev can download
+- the route per source: Google Business, current site, Instagram, reviews, competitors
+- the two Chrome extensions the dev installs — AIX Downloader and MarkDownload
+- the short list of what only the client has: vector logo, confirmed WhatsApp, CNPJ, consent
+
+Phase 0b. The first of the four stops that wait for the dev.
+
+Everything harvested lands as `web:` and `confirmed: false`. Contact, opening hours
+and price coming from the web become confirmation questions in phase 3.
+
+Never makes the dev copy by hand what I read in ten seconds.
+
 ---
 
 ## estudo-assets
@@ -580,7 +602,7 @@ Responsible for
 - the default assumption behind every question that is not asked
 - conflicts between two sources that both came from the client
 
-Phase 3. One of the three stops that wait for the dev.
+Phase 3. One of the four stops that wait for the dev.
 
 A conflict is never decided alone. Two of the client's own sources contradicting
 each other needs the client.
@@ -686,7 +708,7 @@ Responsible for
   contract from it
 - the gate between each phase
 
-Does not do the work. Coordinates the 23 specialists who do.
+Does not do the work. Coordinates the 24 specialists who do.
 
 ---
 

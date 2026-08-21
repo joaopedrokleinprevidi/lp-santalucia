@@ -1,7 +1,7 @@
 ---
-name: video-decisao
-description: Use when a page has video and someone must decide whether it stays, what it says and which technique carries it — looping video, canvas frame sequence, or legacy currentTime scrub. Decide se o clipe fica ou vira foto, o papel narrativo (lugar, processo, transformacao, atmosfera), a tecnica por secao, loop ou once, e o fallback de scrub no iOS Safari. Keywords: video no scroll, background video, escolher tecnica de video, scroll-driven MP4.
-argument-hint: [chave-do-capitulo]
+name: "video-decisao"
+description: "Use when a page has video and someone must decide whether it stays, what it says and which technique carries it — looping video, canvas frame sequence, or legacy currentTime scrub. Decide se o clipe fica ou vira foto, o papel narrativo (lugar, processo, transformacao, atmosfera), a tecnica por secao, loop ou once, e o fallback de scrub no iOS Safari. Keywords: video no scroll, background video, escolher tecnica de video, scroll-driven MP4."
+argument-hint: "[chave-do-capitulo]"
 ---
 
 # Video Decisão

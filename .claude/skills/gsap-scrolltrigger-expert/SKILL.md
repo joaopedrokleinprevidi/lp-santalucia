@@ -1,7 +1,7 @@
 ---
-name: gsap-scrolltrigger-expert
-description: Use when building scroll behaviour with GSAP ScrollTrigger — scrubbed timeline, parallax, pinned section, reveal on scroll, horizontal scroll, card stacking, mask/clip reveal, background colour handoff, word-by-word text — or wiring Lenis smooth scroll to the GSAP ticker. Também para trigger que dispara no lugar errado, pin que quebra layout ou scroll travado. Keywords: scrub, pinSpacing, sticky, marcadores, markers, refresh, matchMedia.
-argument-hint: [secao-ou-efeito]
+name: "gsap-scrolltrigger-expert"
+description: "Use when building scroll behaviour with GSAP ScrollTrigger — scrubbed timeline, parallax, pinned section, reveal on scroll, horizontal scroll, card stacking, mask/clip reveal, background colour handoff, word-by-word text — or wiring Lenis smooth scroll to the GSAP ticker. Também para trigger que dispara no lugar errado, pin que quebra layout ou scroll travado. Keywords: scrub, pinSpacing, sticky, marcadores, markers, refresh, matchMedia."
+argument-hint: "[secao-ou-efeito]"
 ---
 
 # GSAP ScrollTrigger

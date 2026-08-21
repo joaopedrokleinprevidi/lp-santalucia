@@ -1,7 +1,7 @@
 ---
-name: frontend-design
-description: Use when choosing the visual character of a page or fixing one that reads as templated — font pairing, texture, atmosphere, colour proportion inside a fixed brand palette. Fase 10b — parece template, esta generico, sem personalidade, AI slop, direcao estetica, tom, escolha de fonte, par tipografico, grain, ruido, gradiente mesh, sombra tingida, proporcao de area entre as cores, zona de cor, acento cortado em portugues.
-argument-hint: [secao-ou-pagina]
+name: "frontend-design"
+description: "Use when choosing the visual character of a page or fixing one that reads as templated — font pairing, texture, atmosphere, colour proportion inside a fixed brand palette. Fase 10b — parece template, esta generico, sem personalidade, AI slop, direcao estetica, tom, escolha de fonte, par tipografico, grain, ruido, gradiente mesh, sombra tingida, proporcao de area entre as cores, zona de cor, acento cortado em portugues."
+argument-hint: "[secao-ou-pagina]"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 

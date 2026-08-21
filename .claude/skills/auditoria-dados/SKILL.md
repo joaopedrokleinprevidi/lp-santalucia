@@ -1,6 +1,6 @@
 ---
-name: auditoria-dados
-description: Use when the briefing, the asset inventory and the design system already exist and you must audit what is still missing or contradictory before any copy is written. Fase 3 do pipeline: monta os blocos bloqueia, importante e opcional com a pergunta exata em portugues de leigo e a suposicao padrao de cada uma, detecta conflito entre fontes, e lista o que nunca se inventa. Uma rodada unica. Produz design/lacunas.md.
+name: "auditoria-dados"
+description: "Use when the briefing, the asset inventory and the design system already exist and you must audit what is still missing or contradictory before any copy is written. Fase 3 do pipeline: monta os blocos bloqueia, importante e opcional com a pergunta exata em portugues de leigo e a suposicao padrao de cada uma, detecta conflito entre fontes, e lista o que nunca se inventa. Uma rodada unica. Produz design/lacunas.md."
 allowed-tools: Read, Write, Edit, Glob, Grep, AskUserQuestion, Bash(node *)
 ---
 

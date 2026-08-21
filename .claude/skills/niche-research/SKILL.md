@@ -1,7 +1,7 @@
 ---
-name: niche-research
-description: Use when a landing page needs market grounding before any copy is written — the client's site, Instagram, Google reviews and 3 to 5 local competitors. Fase 4, produz design/pesquisa.md: as frases do setor proibidas na copy, a brecha, as palavras literais das avaliacoes, as objecoes em ordem de custo e o que a regulacao do nicho exige. Palavras-chave: pesquisa de mercado, concorrente, avaliacao do Google, objecao, brecha, FAQ real.
-argument-hint: [nome-do-cliente] [cidade] [segmento]
+name: "niche-research"
+description: "Use when a landing page needs market grounding before any copy is written — the client's site, Instagram, Google reviews and 3 to 5 local competitors. Fase 4, produz design/pesquisa.md: as frases do setor proibidas na copy, a brecha, as palavras literais das avaliacoes, as objecoes em ordem de custo e o que a regulacao do nicho exige. Palavras-chave: pesquisa de mercado, concorrente, avaliacao do Google, objecao, brecha, FAQ real."
+argument-hint: "[nome-do-cliente] [cidade] [segmento]"
 allowed-tools: WebSearch, WebFetch, Read, Glob, Grep, Write, AskUserQuestion, Bash(node *)
 ---
 

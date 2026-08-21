@@ -1,7 +1,7 @@
 ---
-name: motion-ui-expert
-description: Use when building or refining component-level motion — button, card, input, link, menu, modal, toast, skeleton, cursor — and the states around them. Fase 10 — animacao de botao, card, formulario, menu mobile, modal, toast, skeleton, cursor; estado de hover, clique, foco, desabilitado, carregando, erro e sucesso; micro-interacao, feedback de formulario, spinner, botao magnetico, focus-visible. Nao serve para animacao dirigida por scroll.
-argument-hint: [componente] [estado]
+name: "motion-ui-expert"
+description: "Use when building or refining component-level motion — button, card, input, link, menu, modal, toast, skeleton, cursor — and the states around them. Fase 10 — animacao de botao, card, formulario, menu mobile, modal, toast, skeleton, cursor; estado de hover, clique, foco, desabilitado, carregando, erro e sucesso; micro-interacao, feedback de formulario, spinner, botao magnetico, focus-visible. Nao serve para animacao dirigida por scroll."
+argument-hint: "[componente] [estado]"
 ---
 
 # Motion de componente — Fase 10

@@ -1,7 +1,7 @@
 ---
-name: creative-direction-expert
-description: Use when setting or auditing how ambitious a landing page experience is, before anything is animated. Fases 5 e 7: fixa Experience Score, Creative Budget, profundidade em viewports, pontos de complexidade por capitulo, banda da curva 20-40-60-80-100, quais WOW moments a pagina ganha e o fallback de cada um, capitulo de silencio, variedade de entrada, Motion ROI. Tambem quando a pagina parece toda igual ou sem momento marcante.
-argument-hint: [passe-1-ou-2] [experience-score-alvo]
+name: "creative-direction-expert"
+description: "Use when setting or auditing how ambitious a landing page experience is, before anything is animated. Fases 5 e 7: fixa Experience Score, Creative Budget, profundidade em viewports, pontos de complexidade por capitulo, banda da curva 20-40-60-80-100, quais WOW moments a pagina ganha e o fallback de cada um, capitulo de silencio, variedade de entrada, Motion ROI. Tambem quando a pagina parece toda igual ou sem momento marcante."
+argument-hint: "[passe-1-ou-2] [experience-score-alvo]"
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(node *)
 ---
 

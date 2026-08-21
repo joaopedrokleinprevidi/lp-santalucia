@@ -1,7 +1,7 @@
 ---
-name: brand-dna-extractor
-description: Use when you have a brand's real assets (logo, social posts, storefront photos, printed material) and need to extract a design system from them — colors, typography, shapes, motifs, tone — into a design JSON that drives the landing page. Extrai identidade visual de assets reais e gera design tokens.
-argument-hint: [pasta-de-assets] [nome-da-marca]
+name: "brand-dna-extractor"
+description: "Use when you have a brand's real assets (logo, social posts, storefront photos, printed material) and need to extract a design system from them — colors, typography, shapes, motifs, tone — into a design JSON that drives the landing page. Extrai identidade visual de assets reais e gera design tokens."
+argument-hint: "[pasta-de-assets] [nome-da-marca]"
 allowed-tools: Read, Glob, Grep, Write, Bash(node *), Bash(npx *)
 ---
 

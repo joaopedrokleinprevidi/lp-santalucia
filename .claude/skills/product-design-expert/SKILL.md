@@ -1,7 +1,7 @@
 ---
-name: product-design-expert
-description: Use when defining or auditing a page's visual system — type scale, spacing, grid, hierarchy, palette, contrast, design tokens, section composition. Fase 10a — escala tipografica, tamanho de fonte, clamp, espacamento, margem, grade, coluna, medida em ch, hierarquia de leitura, paleta, contraste 4.5:1, tokens no @theme, composicao de secao. Tambem quando a pagina esta apertada, sem hierarquia ou com todas as secoes iguais.
-argument-hint: [secao-ou-arquivo] [o-que-corrigir]
+name: "product-design-expert"
+description: "Use when defining or auditing a page's visual system — type scale, spacing, grid, hierarchy, palette, contrast, design tokens, section composition. Fase 10a — escala tipografica, tamanho de fonte, clamp, espacamento, margem, grade, coluna, medida em ch, hierarquia de leitura, paleta, contraste 4.5:1, tokens no @theme, composicao de secao. Tambem quando a pagina esta apertada, sem hierarquia ou com todas as secoes iguais."
+argument-hint: "[secao-ou-arquivo] [o-que-corrigir]"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 

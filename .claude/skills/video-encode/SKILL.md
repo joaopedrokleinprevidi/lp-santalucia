@@ -1,7 +1,7 @@
 ---
-name: video-encode
-description: Use when raw video must become web renditions and a working <video> element — ffmpeg transcode, CRF, faststart, poster frame, IntersectionObserver gating, autoplay rules, reduced-motion fallback. Transcodar video para web, gerar poster, montar o elemento video com muted playsInline loop, lazy load por gate, escolher rendition desktop ou mobile, peso por segundo. Keywords: ffmpeg, MP4, H.264, autoplay, poster, ChapterFilm, public/media.
-argument-hint: [caminho-do-master] [chave-do-capitulo]
+name: "video-encode"
+description: "Use when raw video must become web renditions and a working <video> element — ffmpeg transcode, CRF, faststart, poster frame, IntersectionObserver gating, autoplay rules, reduced-motion fallback. Transcodar video para web, gerar poster, montar o elemento video com muted playsInline loop, lazy load por gate, escolher rendition desktop ou mobile, peso por segundo. Keywords: ffmpeg, MP4, H.264, autoplay, poster, ChapterFilm, public/media."
+argument-hint: "[caminho-do-master] [chave-do-capitulo]"
 ---
 
 # Video Encode

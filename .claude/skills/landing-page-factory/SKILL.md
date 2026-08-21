@@ -1,32 +1,33 @@
 ---
-name: landing-page-factory
-description: Use to run a whole landing page project end to end, from a folder of client assets to a live URL. Algoritmo completo da fábrica de landing page: briefing, estudo dos assets, DNA da marca, lacunas, pesquisa de nicho, direção criativa, estrutura, copy, prompts de imagem e animação, build Next.js com scroll, portões de auditoria e deploy no GitHub e Vercel. Orquestra as outras 23 skills.
-argument-hint: [pasta-de-assets] [nome-do-cliente]
+name: "landing-page-factory"
+description: "Use to run a whole landing page project end to end, from a folder of client assets to a live URL. Algoritmo completo da fábrica de landing page: briefing, estudo dos assets, DNA da marca, lacunas, pesquisa de nicho, direção criativa, estrutura, copy, prompts de imagem e animação, build Next.js com scroll, portões de auditoria e deploy no GitHub e Vercel. Orquestra as outras 24 skills."
+argument-hint: "[pasta-de-assets] [nome-do-cliente]"
 ---
 
 # Landing Page Factory
 
 | | |
 |---|---|
-| **ENTRADA** | a pasta de assets do cliente e os dados que o dev trouxe. Nada mais: todo artefato do pipeline é escrito por uma das 23 skills chamadas daqui |
+| **ENTRADA** | o nome da empresa e a cidade. A pasta de assets pode chegar vazia: a Fase 0b existe para enchê-la. Todo artefato do pipeline é escrito por uma das 24 skills chamadas daqui |
 | **SAÍDA** | nenhum arquivo próprio. A saída é a sequência executada e os três portões respeitados; o último artefato é o de `publicar-lp` — repo `lp-<slug>` e URL de produção |
 | **ANTES** | nenhuma. É o ponto de entrada do projeto |
 | **DEPOIS** | `briefing-cliente` (Fase 0), e daí a ordem do algoritmo abaixo |
 
-Esta skill é o único lugar onde a numeração das 13 fases é canônica. Cada uma das outras 23
+Esta skill é o único lugar onde a numeração das 13 fases é canônica. Cada uma das outras 24
 declara o próprio contrato ENTRADA/SAÍDA/ANTES/DEPOIS no topo do SKILL.md dela, derivado desta
 ordem. Se um contrato divergir daqui, o contrato está errado.
 
-Uma pasta com fotos e um telefone entram. Um site no ar sai.
+Um nome e uma cidade entram. Um site no ar sai.
 
-Esta skill não faz o trabalho — ela é o **algoritmo** que chama as outras 23 na ordem certa,
+Esta skill não faz o trabalho — ela é o **algoritmo** que chama as outras 24 na ordem certa,
 com um portão entre cada passo.
 
 ## O contrato com o dev
 
 O dev é leigo. O trabalho dele inteiro são quatro linhas:
 
-1. Trazer os dados da empresa e as imagens que o cliente tiver.
+1. Baixar o que só ele alcança, pelo roteiro da Fase 0b: Instagram, logo em vetor, fotos do
+   cliente, WhatsApp confirmado. O que está em fonte pública eu garimpo sozinho.
 2. Dizer "gere".
 3. Colar os prompts que eu entrego no ChatGPT (imagens) e no Google Flow (clipes), salvando nos
    caminhos que cada bloco indica.
@@ -46,13 +47,26 @@ cliente para de atender.
 
 ```
 ALGORITMO landing_page(pasta_assets, dados_do_cliente)
+  · dados_do_cliente pode ser só nome e cidade · pasta_assets pode chegar vazia
 
   ── ENTRADA ──────────────────────────────────────────────────────────────────
 
   0.  briefing-cliente(dados_do_cliente)                    → design/briefing.json
+      · NÃO pergunte o que a 0b garimpa: endereço, horário, redes, texto do site
       SE falta node≥20 | git | gh            ENTÃO PARE · peça ao dev (credentials.md)
-      SE falta campo do bloco BLOQUEIA       ENTÃO PARE · peça numa rodada só
+      SE falta BLOQUEIA que a 0b não busca   ENTÃO PARE · peça numa rodada só
       SENÃO                                        registre a suposição e siga
+
+  0b. coleta-dados(nome, cidade)                            → design/coleta.json
+      EU  · Google Business · site atual · avaliações · 3–5 concorrentes locais
+      DEV · logo em vetor · Instagram pelo AIX Downloader · fotos do celular do cliente
+          · WhatsApp confirmado · CNPJ · autorização de imagem e depoimento
+      SE o site tem blog ou 5+ páginas       ENTÃO dev salva com MarkDownload
+                                                   → assets-source/site/*.md
+      SE assets-source/ tem <20 imagens OU nenhum logo
+                                             ENTÃO ESPERE o download do dev  ⟵ parada 0
+      SE duas fontes do cliente se negam     ENTÃO registre em conflitos · NÃO decida
+      NUNCA marque campo web: como confirmed — contato, horário e preço voltam na Fase 3
 
   1.  PARA CADA arquivo EM pasta_assets:
         estudo-assets(arquivo)                              → design/inventario.json
@@ -165,7 +179,8 @@ FIM
 
 | # | Fase | Skill dona | Artefato | DEV atua? |
 |---|---|---|---|---|
-| 0 | Briefing e credenciais | `briefing-cliente` | `design/briefing.json` | **Sim** — traz dados e imagens |
+| 0 | Briefing e credenciais | `briefing-cliente` | `design/briefing.json` | **Sim** — traz o que já sabe |
+| 0b | Coleta de dados | `coleta-dados` | `design/coleta.json` + `assets-source/` cheia | **Sim** — baixa o que só ele alcança |
 | 1 | Estudo dos assets | `estudo-assets` | `design/inventario.json` | Não |
 | 2 | DNA visual | `brand-dna-extractor` | `design/design-system.json` | Não |
 | 3 | Auditoria de lacunas | `auditoria-dados` | `design/lacunas.md` | **Sim** — 1 rodada única |
@@ -181,8 +196,8 @@ FIM
 | 11 | Portões | `audit-responsivo` · `audit-acessibilidade` · `audit-performance` | laudo aprovado | Não |
 | 12 | Publicar | `publicar-lp` | repo + URL | **Sim** — autoriza |
 
-Três paradas esperam o dev: **3**, **6b** e **9**, mais a autorização da **12**. As outras rodam
-sem ele.
+Quatro paradas esperam o dev: **0b** baixar, **3** responder, **6b** revisar e **9** gerar, mais a
+autorização da **12**. As outras rodam sem ele.
 
 > Esta numeração é canônica e vale em todos os arquivos da fábrica. Se um arquivo divergir, o
 > arquivo está errado — conserte o arquivo, não a tabela.
@@ -220,6 +235,8 @@ da marca.
 - **Frame sequence em toda seção** — vira download. Uma por página; duas só se distantes.
 - **Publicar com item BLOQUEIA aberto** — promessa falsa sobre negócio real custa mais que atraso.
 - **Decidir um CONFLITO sozinho** — duas fontes do cliente se negando exige o cliente.
+- **Pedir ao dev o que a Fase 0b garimpa** — endereço, horário e avaliações eu leio em segundos.
+  Tarefa manual desnecessária é atrito no serviço dele, e o dev cansado pula o que importa.
 - **Pular o portão da Fase 11** — acessibilidade adiada vira dívida que ninguém paga.
 - **Repositório público com dado interno** — o histórico do git guarda mesmo depois de apagar.
 - **Aceitar imagem 80% certa** — arrasta a página mais para baixo que uma seção sem imagem.

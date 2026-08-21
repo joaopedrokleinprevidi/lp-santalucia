@@ -1,7 +1,7 @@
 ---
-name: prompt-imagem
-description: Use when writing the AI image prompt for each landing page section — freezing the Style Anchor, deciding which sections earn a generated still, and enforcing the zero-text and concrete-subject gates. Fase 8a, produz design/image-prompts.md. Prompt de imagem para ChatGPT/GPT Image, papel visual por secao, proporcao, quais arquivos anexar, SUBJECT COMPOSITION DETAIL FRAMING EXCLUDE, teste de aceitacao. Rejeita letra, rosto e assunto abstrato.
-argument-hint: [secao] [papel-visual]
+name: "prompt-imagem"
+description: "Use when writing the AI image prompt for each landing page section — freezing the Style Anchor, deciding which sections earn a generated still, and enforcing the zero-text and concrete-subject gates. Fase 8a, produz design/image-prompts.md. Prompt de imagem para ChatGPT/GPT Image, papel visual por secao, proporcao, quais arquivos anexar, SUBJECT COMPOSITION DETAIL FRAMING EXCLUDE, teste de aceitacao. Rejeita letra, rosto e assunto abstrato."
+argument-hint: "[secao] [papel-visual]"
 allowed-tools: Read, Glob, Write
 ---
 

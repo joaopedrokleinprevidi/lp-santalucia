@@ -1,7 +1,7 @@
 ---
-name: skill-builder
-description: Use when creating a new skill, rewriting or auditing an existing one, splitting an oversized one, or deciding which skill owns a fact. Cria, audita e divide skills do Claude Code: frontmatter, description dentro do orcamento, contrato ENTRADA/SAIDA/ANTES/DEPOIS, SKILL.md de 150 a 300 linhas, arquivo de apoio e fronteira entre skills irmas. Palavras-chave: criar skill, auditar skill, dividir skill, description que nao dispara.
-argument-hint: [nome-da-skill | caminho/para/SKILL.md]
+name: "skill-builder"
+description: "Use when creating a new skill, rewriting or auditing an existing one, splitting an oversized one, or deciding which skill owns a fact. Cria, audita e divide skills do Claude Code: frontmatter, description dentro do orcamento, contrato ENTRADA/SAIDA/ANTES/DEPOIS, SKILL.md de 150 a 300 linhas, arquivo de apoio e fronteira entre skills irmas. Palavras-chave: criar skill, auditar skill, dividir skill, description que nao dispara."
+argument-hint: "[nome-da-skill | caminho/para/SKILL.md]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash(ls *), Bash(wc *)
 ---
 
@@ -33,7 +33,7 @@ Cinco regras duras. Uma skill que viola qualquer uma delas é reescrita, não re
 | Tamanho | `SKILL.md` entre **150 e 300 linhas** | Abaixo de 150 a skill não tem decisão própria e é um capítulo de outra. Acima de 300 o miolo perde peso na atenção do modelo e o detalhe deixa de ser lido |
 | Responsabilidade | **uma** decisão por skill | Duas decisões na mesma skill não podem ser executadas em ordens diferentes, e é justamente a ordem que o pipeline precisa poder mudar |
 | Contrato | **ENTRADA / SAÍDA / ANTES / DEPOIS** numa tabela no topo, antes de qualquer prosa | É o que faz a saída de uma skill ser a entrada da próxima. Sem isso o conjunto lê como documentação, não como algoritmo |
-| Description | **≤450 caracteres** | Todas as descriptions somadas entram no contexto com teto de ~16.000 chars. Com ~24 skills, uma description longa **apaga a de outra skill** — e o corte é silencioso |
+| Description | **≤450 caracteres** | Todas as descriptions somadas entram no contexto com teto de ~16.000 chars. Com ~25 skills, uma description longa **apaga a de outra skill** — e o corte é silencioso |
 | Apoio | Passou de 300 linhas, o excedente vai para arquivo irmão referenciado | Detalhe consultado às vezes não pode custar contexto sempre |
 
 O contrato é literalmente esta tabela, com estes quatro rótulos em maiúsculas:
@@ -47,7 +47,7 @@ O contrato é literalmente esta tabela, com estes quatro rótulos em maiúsculas
 | **DEPOIS** | a skill que roda depois, e o que ela vai consumir daqui |
 ```
 
-**Skill fora do trilho linear troca `ANTES` por `QUEM CHAMA`.** Quatro das 24 não têm fase
+**Skill fora do trilho linear troca `ANTES` por `QUEM CHAMA`.** Quatro das 25 não têm fase
 própria — `skill-builder`, `video-to-website`, `gsap-scrolltrigger-expert`, `motion-ui-expert` —
 porque são chamadas por roteamento, não por número de fase. Escrever `ANTES: Nenhuma` nelas
 esconde a informação que importa: quem dispara, e sob qual condição. `QUEM CHAMA` nomeia a skill

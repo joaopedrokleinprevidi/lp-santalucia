@@ -95,11 +95,35 @@ indexável.
 
 Estão listadas em `design-system.json` no campo `unverified`. As que bloqueiam:
 
-- **Número do WhatsApp.** É o canal de conversão principal desta página e não existe número
-  confirmado para ele em nenhum asset. O `(54) 3025-2223` é telefone fixo.
+- **Número do WhatsApp — existe candidato, falta confirmar.** Nenhum asset do cliente traz o
+  número; o `(54) 3025-2223` é telefone fixo. Mas a busca pública encontrou o candidato
+  **(54) 99967-4276**, citado por diretório de nicho (Petlove / rede credenciada) e por
+  agregadores locais. Está no `unverified` com `source: "web:"` e `confirmed: false`, e é ali que
+  ele fica: procedência web não vira fato. Enquanto o cliente não confirmar, esse número não
+  entra em botão, link `wa.me` nem JSON-LD. A pendência continua aberta — só mudou de "não
+  existe número" para "existe candidato a confirmar".
 - **Pets não convencionais.** O post anuncia atendimento 24h para exóticos; o FAQ do site atual
   diz que o foco é cão e gato. Um dos dois está desatualizado. É um diferencial forte se
   confirmado e uma promessa falsa se não.
 - **Estacionamento.** As fotos mostram vagas na rua, não estacionamento próprio. A copy não
   pode prometer o que não existe.
-- **Handles das redes sociais** para o rodapé.
+- **Handles das redes sociais** para o rodapé. A mesma busca trouxe dois domínios
+  (`veterinariasantalucia24h.com.br`, `petcentersantalucia.com.br`) e o Facebook
+  `facebook.com/petcenter.stalucia24h`, agora no bloco `canaisDigitais` do `design-system.json`,
+  todos com `confirmed: false`. Importam para o `sameAs` do JSON-LD, que só é preenchido depois
+  da confirmação. O Instagram continua sem fonte.
+
+### De onde veio o candidato de WhatsApp
+
+Do garimpo automático, não do cliente. Rodamos a **rota 1 da Fase 0b** (skill `coleta-dados`,
+busca na web) sobre a Santa Lúcia em 2026-08-20 e a busca devolveu o número junto com os canais
+digitais acima.
+
+Vale registrar o que isso significa para o pipeline: uma pendência classificada como
+**bloqueante e dependente do cliente** foi resolvida — em nível de candidato — por uma etapa
+automática. A Fase 0b não existia quando este projeto foi montado. Numa execução nova, o garimpo
+viria antes de qualquer pedido ao cliente, e a lista de perguntas entregue a ele começaria menor.
+
+O que a Fase 0b **não** faz é transformar achado em fato. Ela reduz a pendência de "não temos" para
+"temos candidato com procedência declarada". A confirmação do cliente continua sendo o único
+caminho de `unverified` para `facts`.

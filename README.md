@@ -25,6 +25,11 @@ As quatro primeiras fases do pipeline estão prontas em [design/](design/):
 | [image-prompts.md](design/image-prompts.md) | 8 prompts para gerar as imagens no GPT, com o Style Anchor congelado |
 | [motion-prompts.md](design/motion-prompts.md) | 7 prompts de animação para o Google Flow, com a técnica de destino de cada seção |
 
+Não existe `coleta.json` aqui: o projeto foi montado antes da Fase 0b (skill `coleta-dados`)
+existir, e ela nunca rodou completa para a Santa Lúcia. Uma execução nova começaria pelo garimpo,
+antes do briefing — a rota 1 rodada como teste já devolveu um candidato a WhatsApp e os canais
+digitais, registrados em [design/README.md](design/README.md).
+
 O que falta: gerar as imagens, animá-las, e construir o site. O passo a passo está em
 [design/README.md](design/README.md), e o pipeline completo na skill `landing-page-factory`.
 
