@@ -1,7 +1,7 @@
 {
-  "$comment": "Extraído dos assets reais em /assets por brand-dna-extractor. Cores medidas por amostragem de pixels, não estimadas. Contraste calculado (WCAG 2.1). Ver /design/README.md para a metodologia.",
+  "$comment": "Extraído dos assets reais em /assets-source por brand-dna-extractor. Cores medidas por amostragem de pixels, não estimadas. Contraste calculado (WCAG 2.1). Ver /design/README.md para a metodologia.",
   "meta": {
-    "generatedFrom": "assets/ (9 arquivos) + docs/dados-google-da-empresa.txt + docs/conteudo-textual-site.md",
+    "generatedFrom": "assets-source/ (9 arquivos) + docs/dados-google-da-empresa.txt + docs/conteudo-textual-site.md",
     "method": "sharp raw sampling: passe A dominante (quantização 12 níveis), passe B isolamento cromático (s>=45%, 12%<=l<=88%, janela de matiz)",
     "date": "2026-08-20"
   },
@@ -240,7 +240,7 @@
       "retail": ["pet shop", "farmácia veterinária 24h", "medicamentos", "suplementos"],
       "feline": ["recepção exclusiva", "consultório exclusivo", "internação exclusiva"],
       "exotic": ["atendimento 24h para pets não convencionais"],
-      "source": "docs + os 4 posts de /assets"
+      "source": "docs + os 4 posts de /assets-source"
     },
     "differentiators": [
       "Plantão 24h real, não sobreaviso",
@@ -288,7 +288,7 @@
   ],
 
   "unverified": [
-    { "item": "Conflito: o FAQ do site atual diz 'foco principal em cães e gatos, consulte-nos para outras espécies', mas o post de /assets anuncia 'Especialistas em pets não convencionais' com atendimento 24h.", "impact": "alto — é um diferencial forte se confirmado, e uma promessa falsa se não.", "action": "Confirmar com o cliente antes de publicar. O post é mais recente e mais específico, então a hipótese é que o FAQ do site está desatualizado." },
+    { "item": "Conflito: o FAQ do site atual diz 'foco principal em cães e gatos, consulte-nos para outras espécies', mas o post de /assets-source anuncia 'Especialistas em pets não convencionais' com atendimento 24h.", "impact": "alto — é um diferencial forte se confirmado, e uma promessa falsa se não.", "action": "Confirmar com o cliente antes de publicar. O post é mais recente e mais específico, então a hipótese é que o FAQ do site está desatualizado." },
     {
       "item": "WhatsApp: existe um candidato encontrado em fonte pública, ainda não confirmado pelo cliente. E-mail de contato continua sem nenhuma fonte.",
       "candidate": "(54) 99967-4276",

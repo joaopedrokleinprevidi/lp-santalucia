@@ -8,8 +8,9 @@ Este repositório reúne, por enquanto, os materiais de base do projeto: identid
 
 ```
 .claude/skills/     14 especialistas: marca, storytelling, design, motion, vídeo, auditoria
-assets/             Imagens da marca, fachada e posts sociais
+assets-source/      Imagens da marca, fachada e posts sociais (material do cliente)
 design/             Design system, blueprint da LP, prompts de imagem e animação
+design/renders/     Onde entram os PNG e MP4 gerados na Fase 9 (não versionado)
 docs/               Conteúdo textual do site antigo e dados da empresa
 CLAUDE.md           Workflow obrigatório e critérios de qualidade
 ```

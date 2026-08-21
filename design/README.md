@@ -7,7 +7,7 @@ existe. Nada aqui é código: são as decisões que o código vai executar.
 
 | Arquivo | O que é | Quem escreveu |
 |---|---|---|
-| `design-system.json` | O DNA da marca em tokens: cores medidas, tipografia, formas, motifs, voz, fatos reais | `brand-dna-extractor`, a partir de `/assets` |
+| `design-system.json` | O DNA da marca em tokens: cores medidas, tipografia, formas, motifs, voz, fatos reais | `brand-dna-extractor`, a partir de `/assets-source` |
 | `landing-blueprint.md` | A estrutura da página seção a seção, com a copy definitiva | `landing-storytelling-director` + painel de julgamento |
 | `image-prompts.md` | Um prompt de imagem por seção, para gerar no GPT | `ai-visual-prompt-director` |
 | `motion-prompts.md` | Um prompt de animação por seção, para o Google Flow | `ai-visual-prompt-director` |
@@ -18,7 +18,7 @@ os demais não são reescritos — eles referenciam.
 ## O pipeline
 
 ```
-/assets (fotos reais + posts)
+/assets-source (fotos reais + posts)
    │
    ├─ brand-dna-extractor ──────────→ design-system.json
    │                                       │
@@ -56,14 +56,15 @@ cada prompt de seção no GPT. O anchor é idêntico em todos os prompts e não 
 meio do caminho: é ele que faz oito imagens geradas em oito chamadas parecerem o mesmo
 ensaio fotográfico.
 
-Salve os resultados em `assets/generated/<secao>.png`, na maior resolução disponível.
+Salve os resultados em `design/renders/<secao>.png`, na maior resolução disponível. A convenção
+de nome está em `image-prompts.md`: `NN-id-secao.png`.
 
 **4. Animar no Google Flow** — abra `motion-prompts.md`. Cada bloco diz qual still animar e
 qual movimento pedir. As restrições ali não são estéticas, vêm da etapa seguinte: clipe de
 4–6s, um movimento contínuo, sem corte, sem tremor, sem loop. Um corte no meio do clipe vira
 um glitch visível quando o scroll passa por cima dele.
 
-Salve em `assets/generated/<secao>.mp4`.
+Salve em `design/renders/<secao>.mp4`.
 
 **5. Virar site** — `video-to-website` extrai os frames, monta o canvas e amarra ao scroll.
 A tabela no fim de `motion-prompts.md` já diz quais seções recebem sequência de frames
@@ -83,7 +84,7 @@ base declarada. `unverified` contém o que bloqueia publicação. Nada de `infer
 sem alguém confirmar.
 
 **Não gerar imagem que afirme um fato sobre o negócio real.** A fachada e a equipe existem em
-`/assets` como fotos reais e entram na página como estão. Gerar um prédio que não é o prédio
+`/assets-source` como fotos reais e entram na página como estão. Gerar um prédio que não é o prédio
 deles, ou um veterinário que não trabalha lá, é afirmar algo falso sobre um negócio real.
 Imagem gerada serve para papel ilustrativo e atmosférico.
 

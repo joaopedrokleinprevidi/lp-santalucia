@@ -1,13 +1,34 @@
+# Renders da Fase 9 — PNG do ChatGPT e MP4 do Google Flow.
+# Pesados e regeraveis a partir de design/image-prompts.md e design/motion-prompts.md.
+design/renders/*
+!design/renders/.gitkeep
+
+# Conversa de reuniao com o cliente: dado ainda nao confirmado.
+# Nada daqui vira copy sem passar por unverified -> facts no design-system.json.
+design/lacunas.md
+
+# EXCECAO DESTE PROJETO: assets-source/ NAO e ignorado.
+# Os 9 arquivos do cliente ja estao versionados desde o commit inicial e sao a
+# base medida do design system — as cores em design-system.json foram amostradas
+# pixel a pixel desses arquivos. Perde-los invalida a procedencia do design system.
+# Em projetos novos da fabrica, avalie ignorar assets-source/ se o material for
+# pesado ou vier de fonte externa reproduzivel.
+
+# Dependencias e build
 node_modules
+node_modules/.tmp
+.next
 dist
 dist-ssr
 *.local
 
-# Build caches
+# Plataforma
 .vercel
-node_modules/.tmp
 
-# Editors
+# Env
+.env*
+
+# Editores
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -18,7 +39,7 @@ node_modules/.tmp
 *.sln
 *.sw?
 
-# Local verification artefacts
+# Verificacao local
 shots
 .playwright-mcp
 
@@ -26,6 +47,3 @@ shots
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Env
-.env*

@@ -72,6 +72,17 @@ Modelo generativo renderiza texto como lixo plausível, e diacrítico português
 - **Gerar na maior resolução que a ferramenta oferecer.** O pipeline gera AVIF e WebP a partir do original; ele reduz, nunca amplia.
 - **Nomes de arquivo:** `design/renders/NN-id-secao.png` (ex.: `design/renders/06-quando-precisa-ficar.png`). O clipe do Flow sai como `NN-id-secao.mp4`.
 
+### Anexo de referência — o mecanismo, e onde ele quebra
+
+Descrever cor em texto aproxima; anexar o arquivo entrega o hex. `warm cream #F7F4EF` é uma instrução que o modelo interpreta ao seu modo; o JPG do logo é uma amostra que ele lê. Por isso todo bloco que gera imagem traz uma tabela **ANEXAR**: os arquivos que sobem junto com o prompt, no mesmo envio, e o que cada um está ali para ensinar.
+
+- **O logo entra em toda geração.** É o único arquivo que carrega `#603084`, `#482A78` e `#FCB400` medidos, e é ao lado do logo real no header que cada imagem vai ser vista.
+- **Teto de 3 anexos — e quase todo bloco usa 2.** Com 4 ou mais o modelo faz média das composições e devolve colagem. O sintoma é a imagem voltar com o **enquadramento** da referência e outro assunto dentro: o crop do post, o balcão trocado por outra coisa no mesmo lugar. Quando aparecer, corte para o logo apenas e regere.
+- **Anexo é referência de cor, luz e material. Nunca de enquadramento.** Quem define enquadramento é a linha `COMPOSITION`, porque é ela que reserva o espaço vazio onde a copy do DOM cai. Uma referência que sequestra o enquadramento destrói esse espaço e obriga a salvar a legibilidade com scrim — que é desperdiçar a foto.
+- **`assets-source/fachada-clinica-rua.webp` não é anexo de nada.** Ela é usada direta nas seções 01 e 11 e alimenta o Flow como primeiro frame. Anexada a uma geração, puxa o quadro para perto do prédio real, e imagem gerada não pode afirmar um lugar que existe.
+- **Uma conversa nova por seção.** Em thread longa o modelo passa a usar como referência implícita as imagens que ele mesmo acabou de gerar, e a 07 sai como a 06 com outro bicho dentro. A consistência vem da âncora congelada e dos mesmos anexos deliberados, nunca da memória da conversa.
+- **Ordem do envio: anexos → prompt → frase de anexo.** A frase vai por último, depois do prompt, e está transcrita em todo bloco que gera imagem.
+
 ---
 
 ## 2 · Blocos por seção
@@ -83,9 +94,11 @@ Modelo generativo renderiza texto como lixo plausível, e diacrítico português
 **Papel visual:** responder em meio segundo que tem gente acordada ali dentro, neste momento. O clipe é um dolly-in lento da calçada oposta até o vidro, e **para na calçada — a porta não abre.** A porta abre uma vez só na página inteira, na seção 04.
 
 > ## USAR FOTO REAL — não gerar
-> - **Desktop / full-bleed:** `assets/fachada-clinica-rua.webp`
-> - **Mobile 9:16:** `assets/fachada-clinica-vertical.png`
-> - **Poster de LCP:** `assets/fachada-clinica-thumb.jpg`
+> - **Desktop / full-bleed:** `assets-source/fachada-clinica-rua.webp`
+> - **Mobile 9:16:** `assets-source/fachada-clinica-vertical.png`
+> - **Poster de LCP:** `assets-source/fachada-clinica-thumb.jpg`
+
+**ANEXAR: nada — e isso é decisão, não esquecimento.** Não há geração de imagem aqui, e anexo de referência só existe onde um modelo desenha pixel novo. O arquivo já é a foto certa; ele entra direto no layout e alimenta o Flow como primeiro frame. Vale o contrário também: `fachada-clinica-rua.webp` **não é anexada em nenhuma geração da página** — anexada, ela puxa qualquer quadro gerado para perto do prédio real, que é a única coisa que a página não pode inventar.
 
 **Por que não se gera.** Isto é o prédio real, com a placa real, no endereço real. Uma fachada gerada é uma afirmação falsa sobre um lugar que existe — o tutor que já passou de carro na Jacob Luchesi reconhece a diferença, e a página perde exatamente a credencial que ela veio comprar. Vale para a 01 e para a 11.
 
@@ -99,6 +112,8 @@ Modelo generativo renderiza texto como lixo plausível, e diacrítico português
 
 **Teste de aceitação:** refazer o crop se o selo 24h ou o letreiro saírem do quadro, se a graduação apagar a vitrine iluminada, ou se algum rosto ou placa de carro ficar legível.
 
+**Salvar como:** nenhum still a salvar — a imagem já existe em `assets-source/`. Suba `assets-source/fachada-clinica-rua.webp` no Flow como primeiro frame e salve **o clipe que voltar** como `design/renders/01-agora.mp4`.
+
 ---
 
 ### 02 · `dois-caminhos`
@@ -106,6 +121,15 @@ Modelo generativo renderiza texto como lixo plausível, e diacrítico português
 **Papel visual:** dizer a tese da página inteira em uma imagem só — **é a mesma sala, muda o motivo pelo qual você entra nela.** Câmera travada, o scroll controla a hora do dia. O still é o quadro das 3h da manhã; o time-lapse leva até as 15h.
 
 **Proporção:** 16:9 full-bleed.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | o roxo `#603084` chapado em área grande — que é literalmente o que a metade superior deste quadro é — e o âmbar `#FCB400` exato do pendente | desenhar o logo, o coração ou as silhuetas de cão e gato dentro da cena |
+| 2 | `assets-source/hero-veterinaria-com-gato.jpg` | como roxo e creme da marca se comportam numa sala clínica **fotografada**: parede clara, batente pintado de roxo, faixa âmbar no alto, inox com reflexo baixo e sem estouro | pessoa, rosto, gato, mesa de exame ou enquadramento — aqui a recepção está vazia |
+
+Nenhum post entra na 02. Os quatro são alta-chave, quase brancos, e este quadro é 3h da manhã. E como esta é a **primeira imagem gerada da página** — a que todas as outras vão ter que casar — quanto menos referência, mais o resultado depende da âncora, que é o único elemento que as oito compartilham.
 
 **Prompt completo:**
 
@@ -130,9 +154,19 @@ recognizable human faces, color grading, filter look, bloom, lens flare, oversat
 people, pets, wall clocks, computer monitors, digital displays, plants, posters.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** eyebrow e H1 na faixa superior (parede roxa); os dois cards, A e B, sobre a faixa central. O balcão é a linha que separa os dois.
 
 **Teste de aceitação:** regerar se a câmera não estiver perfeitamente frontal e nivelada — o time-lapse inteiro depende de a câmera nunca se mover, e uma perspectiva torta denuncia o corte. Regerar também se aparecer relógio, monitor ou qualquer painel: além de virar texto falso, um relógio contradiz o time-lapse.
+
+**Salvar como:** `design/renders/02-dois-caminhos.png` — o clipe do Flow gerado a partir dele vai ao lado, como `design/renders/02-dois-caminhos.mp4`.
 
 ---
 
@@ -141,6 +175,15 @@ people, pets, wall clocks, computer monitors, digital displays, plants, posters.
 **Papel visual:** **still, não clipe.** O WOW desta seção é a ausência de movimento, e uma seção que declara isso não paga produção de Flow. A imagem é fundo: nove linhas de sinais de emergência em tipo grande vivem em cima dela, uma acesa por vez. É o beat 9 da página — no auge do medo, espetáculo é ofensivo.
 
 **Proporção:** 16:9 full-bleed, servida como `.webp` com poster único.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | o roxo em campo grande e em sombra: 87% do arquivo é `#603084` chapado, e dois terços deste quadro são parede roxa escura | desenhar o logo ou qualquer marca na parede do corredor |
+| 2 | `assets-source/post-farmacia-completa-24h.jpg` | é o único asset da marca em que o **âmbar aparece como contorno fino e luminoso sobre roxo** — exatamente o papel das arandelas e do reflexo delas no piso; e a foto dentro do arco é fria, fechada e de baixo contraste, que é a faixa tonal do corredor | o arco, o contorno como moldura, o nível de exposição (o post é claro, o corredor é escuro) nem o assunto |
+
+Sem terceiro anexo, e o motivo é o argumento da seção: faixa tonal estreita e parede vazia. Todo anexo extra chega trazendo mobiliário, e mobiliário aqui vira hotspot em cima das nove linhas de texto.
 
 **Prompt completo:**
 
@@ -164,9 +207,19 @@ recognizable human faces, color grading, filter look, bloom, lens flare, oversat
 people, animals, gurneys, open doors, equipment carts, ceiling glare.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** a lista inteira nos dois terços esquerdos, sobre a parede escura. O botão `Ligar (54) 3025-2223` em bloco de largura total, no rodapé da seção, quando todas as linhas acendem de uma vez.
 
 **Teste de aceitação:** regerar se houver qualquer hotspot de luz onde o texto vai (a coreografia derruba as linhas inativas para 18% de opacidade — sobre um brilho, elas somem), ou se alguma porta estiver entreaberta mostrando interior: o corredor tem que ler como calmo e fechado, não como cena de correria.
+
+**Salvar como:** `design/renders/03-e-grave.png` — só o still. Esta seção não tem clipe.
 
 ---
 
@@ -177,6 +230,15 @@ people, animals, gurneys, open doors, equipment carts, ceiling glare.
 **Proporção:** 16:9 full-bleed.
 
 **O problema de continuidade, e como ele se resolve.** O hero é foto real do prédio real; este quadro é gerado. Se o quadro gerado mostrar fachada, os dois nunca vão combinar e a emenda aparece. A solução é enquadrar **tão fechado no vidro que não sobra arquitetura nenhuma no quadro** — a continuidade é carregada pela luz âmbar e pelo reflexo da rua molhada, não pelo prédio. É por isso que o `EXCLUDE` deste bloco é o mais duro da página.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | o âmbar `#FCB400` exato — nesta cena ele é a luz que vaza pelo vidro e o único ponto quente do quadro — e o roxo da quina do balcão entrevisto atrás | desenhar o logo, nem no vidro, nem em adesivo, nem refletido |
+| 2 | `assets-source/post-farmacia-completa-24h.jpg` | a relação de foco que este quadro precisa: primeiro plano nítido recortado contra um roxo fora de foco atrás, sob luz fria de interior | o assunto (mão, luva, seringa), o arco, nem o enquadramento |
+
+**Não anexar `assets-source/fachada-clinica-rua.webp` aqui**, por mais tentador que a continuidade com o hero faça parecer. Este bloco existe justamente para **não** ter arquitetura no quadro; a fachada anexada devolve batente, marquise e letreiro, e é assim que a emenda com a foto real fica visível. A continuidade é carregada pela luz âmbar e pelo asfalto molhado, não pelo prédio.
 
 **Prompt completo:**
 
@@ -203,13 +265,32 @@ storefront facade, building exterior, awning, street signs, house numbers, windo
 any person reflected in the glass.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Teste de aceitação:** regerar se qualquer arquitetura além do batente aparecer — ela contradiz a foto real da fachada em que o hero termina, e o corte fica visível. Regerar também se houver pessoa refletida no vidro, ou se o interior estiver nítido: ele precisa estar desfocado, porque é para onde a câmera ainda vai.
+
+**Salvar como:** `design/renders/04-primeiros-minutos.png` — é o **primeiro frame** que você vai subir no Google Flow. O clipe que voltar de lá salva ao lado, como `design/renders/04-primeiros-minutos.mp4`.
 
 ---
 
 #### 04b · quadro final opcional
 
 Se o Flow for usado no modo **first frame + last frame**, este é o último quadro. Interpolar entre dois quadros ancorados é o que mais aumenta a chance de o plano-sequência sair sem corte — e sem corte é requisito, não preferência: um corte dentro de clipe raspado lê como bug.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | os mesmos hex do bloco 04 — é o que garante que o âmbar do primeiro quadro e o âmbar do último sejam o mesmo âmbar, sem o que a interpolação do Flow deriva de cor no meio do plano | desenhar o logo no armário, na luminária ou na parede |
+| 2 | `assets-source/hero-veterinaria-com-gato.jpg` | a mesa de inox real sob luz clínica, com reflexo baixo e sem estouro no branco, e o roxo pintado em superfície de sala. É o asset que mais se parece com o que este prompt pede | pessoa, rosto, luva, animal ou enquadramento — o `EXCLUDE` deste bloco proíbe pessoa e animal |
+
+Os dois quadros do plano-sequência (04 e 04b) compartilham o logo de propósito: são gerados em conversas separadas e precisam fechar na mesma cor.
 
 ```
 [STYLE ANCHOR verbatim]
@@ -228,9 +309,19 @@ recognizable human faces, color grading, filter look, bloom, lens flare, oversat
 people, animals, blood, surgical instruments laid out, monitors with displays.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** os cinco passos entram um a um sobre o clipe, cada um no instante em que a câmera passa pelo lugar físico correspondente (porta · balcão · mãos recebendo a caixa · corredor · sala de exame). O par `Como chegar` + `Ligar (54) 3025-2223` fecha a seção.
 
 **Teste de aceitação:** regerar se a mesa estiver com instrumental cirúrgico exposto ou qualquer sinal de procedimento em curso. A seção vende **protocolo**, não drama — e o design system proíbe encenar desfecho clínico.
+
+**Salvar como:** `design/renders/04b-primeiros-minutos-final.png` — é o **último frame** que sobe no Flow junto com a 04. Ele não vira imagem da página: existe só para ancorar a interpolação. Se você não usar o modo *first frame + last frame*, este arquivo simplesmente não existe.
 
 ---
 
@@ -253,6 +344,15 @@ reserved exclusively for equipment, fixtures and fittings. Even neutral ambient 
 throughout with no glow, no light bloom and no lit-window effect baked into the artwork.
 No photographic depth of field, no noise, no paper texture, no drop shadows.
 ```
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt. São referências de _desenho_, não de fotografia — é a única seção da página em que isso muda:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | os hex, e mais do que os hex: as silhuetas de cão e gato são **vetor chapado** da marca — contorno limpo, preenchimento sólido, zero gradiente. É a gramática de desenho, não só a cor | desenhar o logo, o coração ou os bichos dentro da ilustração — a axonométrica não tem animal nenhum |
+| 2 | `assets-source/post-banho-e-tosa.jpg` | os seis pictogramas circulares, o divisor tracejado em lilás `#E4D2F0` e o card branco: peso de traço uniforme, fill chapado, sem sombra projetada e sem gradiente. É o vocabulário vetorial que a axonométrica tem que falar para parecer da mesma marca | o assunto, o layout quadrado do post, o cão da foto, e sobretudo qualquer letra — o post é 40% tipografia |
+
+**Nenhuma foto entra aqui.** Anexar `hero-veterinaria-com-gato.jpg` ou a fachada numa geração vetorial devolve profundidade de campo falsa, ruído de sensor e sombra projetada — os três itens que o `ILLUSTRATION ANCHOR` proíbe por escrito. E o teto fica em 2: numa geração de ilustração o excesso de referência não vira colagem de foto, vira o **layout quadrado do post** invadindo a composição axonométrica e comendo os 45% da esquerda.
 
 **Prompt completo:**
 
@@ -280,12 +380,22 @@ name plates, UI overlays, extra limbs, distorted paws, malformed eyes, people, a
 gradients, glow, lit windows, drop shadows, paper texture, blueprint grid lines.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Duas instruções que parecem detalhe e não são:**
 
 1. **Nada de luz assada na ilustração.** As salas precisam sair **apagadas e neutras** para o DOM acendê-las uma a uma com `stagger` de 0,10 s no easing `cubic-bezier(0.16, 1, 0.3, 1)`. Se o modelo entregar as janelas já brilhando, não há o que animar e o único movimento da seção morre.
 2. **Cada sala tem que ser reconhecível sem legenda**, porque legenda é texto e texto é proibido. É por isso que o `DETAIL` nomeia o equipamento de cada uma: a silhueta do aparelho é o rótulo.
 
 **Teste de aceitação:** regerar se a função de qualquer sala não for legível só pelo equipamento; se houver brilho, gradiente ou janela acesa assados na arte; se aparecer letra falsa em alguma caixa da farmácia; ou se qualquer elemento invadir os 45% da esquerda.
+
+**Salvar como:** `design/renders/05-estrutura.png` — sem clipe. O `motion-prompts.md` cita esta seção como `05-estrutura.svg`: o PNG é o que sai do ChatGPT, e a vetorização para SVG é trabalho da Fase 10, dentro do repositório. Salve o PNG e siga.
 
 > **Nota de escopo:** esta é uma ilustração de **capacidade instalada**, não uma planta baixa. A adjacência e a quantidade de andares são esquemáticas. Todos os sete ambientes desenhados constam em `facts.services` do design system — nenhum foi inventado.
 
@@ -296,6 +406,15 @@ gradients, glow, lit windows, drop shadows, paper texture, blueprint grid lines.
 **Papel visual:** a única sequência de frames da página. Tomada única e **completamente imóvel** em que só o tempo passa: a luz da janela vai do preto das 2h ao azul das 6h ao dourado das 8h. É o clipe mais barato de extrair (câmera travada, só a luz muda) e o único impossível de substituir por still — a mudança ao longo do tempo **é** o conteúdo. O handoff de fundo roxo-noite → creme-dia da página inteira acontece dentro dele.
 
 **Proporção:** 16:9 full-bleed. O still gerado é o quadro das 2h, o mais escuro.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | roxo e âmbar exatos; nesta cena o âmbar é uma única luz de vigília baixa na parede e o roxo é a borda pintada do canil | desenhar o logo na parede, no canil ou no monitor |
+| 2 | `assets-source/hero-veterinaria-com-gato.jpg` | tom de pelo natural e tom de inox sob luz clínica, sem grade de cor e sem estouro no branco. É o pelo que precisa continuar crível depois de ser reiluminado três vezes ao longo do clipe — preto, azul e dourado | pessoa, rosto, luva, animal acordado e encarando, nem enquadramento |
+
+Nenhum post entra na 06, e a razão é medida: os quatro são alta-chave, quase brancos. Este é o quadro mais escuro da página, e referência clara empurra a exposição para cima — se a janela das 2h deixar de ser preta, o amanhecer não tem onde acontecer e a seção inteira deixa de existir.
 
 **Prompt completo:**
 
@@ -320,6 +439,14 @@ people, a second animal, wounds, blood, bandages, a cone collar, an open panting
 sign of distress, IV bags, syringes, digits or waveforms with numerals on the monitor screen.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** headline e subheadline na faixa superior; os cinco itens à esquerda, abaixo da janela; os três boletins (`03h20`, `05h50`, `07h40`) entrando em pontos fixos do progresso, sobre a faixa escura inferior direita. **Nenhum CTA nesta seção** — pedir uma ação enquanto o visitante imagina o próprio animal internado transforma empatia em venda, e ele sente.
 
 **Teste de aceitação — o mais rígido da página.** Regerar se:
@@ -328,6 +455,8 @@ sign of distress, IV bags, syringes, digits or waveforms with numerals on the mo
 - a janela não estiver completamente desobstruída — sem ela, o amanhecer não tem onde acontecer e a seção inteira deixa de existir;
 - o enquadramento não sobreviver a ser reiluminado em dourado: o **último frame** é o que fica na tela sob `prefers-reduced-motion` e abaixo do limiar de conexão, então é ele, e não o primeiro, que precisa funcionar sozinho como still.
 
+**Salvar como:** `design/renders/06-quando-precisa-ficar.png`, e o clipe do Flow como `design/renders/06-quando-precisa-ficar.mp4`.
+
 ---
 
 ### 07 · `ala-felina`
@@ -335,6 +464,15 @@ sign of distress, IV bags, syringes, digits or waveforms with numerals on the mo
 **Papel visual:** a primeira luz natural da página. A seção diz "são dois mundos separados" e o clipe faz o visitante **atravessar a separação com o próprio dedo**: travelling lateral que cruza a parede em match-cut, do lado barulhento para o lado quieto. O visitante não lê que as alas são separadas — ele as vê se separando.
 
 **Proporção:** 16:9 full-bleed. O still é o quadro inicial, com a parede ainda dividindo o frame ao meio.
+
+**ANEXAR — 2 arquivos, no mesmo envio do prompt:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | o roxo exato da moldura pintada do vidro fosco — nesta seção o roxo cabe num caixilho fino, e é onde erro de matiz mais aparece | desenhar o logo ou o coração na parede clara, que aqui é grande e vazia |
+| 2 | `assets-source/post-exclusividade-felina.jpg` | pelo de gato em luz difusa alta sobre creme e lilás: é o tratamento felino que a marca **já publica**, e a 07 é a primeira luz natural da página | **a pose e a direção do olhar** — o gato do post encara a câmera com pupila aberta, que é exatamente o que o teste de aceitação desta seção manda regerar. Também não serve para o arco nem para o enquadramento |
+
+Nada de segundo gato. Anexar também `hero-veterinaria-com-gato.jpg` daria duas fotos de gato, e com duas o modelo passa a fazer média das poses — além de trazer pessoa e mesa de inox, dois itens do `EXCLUDE` deste bloco.
 
 **Prompt completo:**
 
@@ -359,9 +497,19 @@ recognizable human faces, color grading, filter look, bloom, lens flare, oversat
 any visible dog, cages, wire mesh, people, toys, food bowls.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** eyebrow e headline no terço superior; os três itens e a linha de fechamento à direita, ao lado do gato; a faixa pill roxa de contorno âmbar (pets não convencionais) ao pé da seção.
 
 **Teste de aceitação:** regerar se o gato estiver encarando a câmera com pupila dilatada, agachado ou com orelha para trás — o argumento inteiro da seção é **um gato calmo**, e um gato tenso desmente a copy na mesma tela em que ela é dita. Regerar também se o lado esquerdo resolver em um cachorro reconhecível: ele tem que permanecer forma quente e borrada, ou o match-cut perde a surpresa.
+
+**Salvar como:** `design/renders/07-ala-felina.png`, e o clipe do Flow como `design/renders/07-ala-felina.mp4`.
 
 ---
 
@@ -370,6 +518,16 @@ any visible dog, cages, wire mesh, people, toys, food bowls.
 **Papel visual:** paga a dívida do arquétipo. É o destino do `É rotina` do hero e o ponto onde o público de rotina converte. Um plano contínuo em que o cão **entra molhado e sai seco** — e como o clipe é raspado pelo scroll, **rolar para cima molha o cachorro de novo.** Ninguém avisa; quem descobre, brinca.
 
 **Proporção:** 16:9 full-bleed. O still é o quadro do meio do banho, com o cão ensaboado.
+
+**ANEXAR — 3 arquivos, no mesmo envio do prompt. É o único bloco da página que usa o teto:**
+
+| # | Arquivo | Serve de referência para | Não serve para |
+|---|---|---|---|
+| 1 | `assets-source/logo-santa-lucia-fundo-roxo.jpg` | roxo e âmbar exatos, aqui presentes na manga do jaleco, no avental e no acabamento do chuveirinho | desenhar o logo no azulejo, no avental ou na parede |
+| 2 | `assets-source/post-banho-e-tosa.jpg` | o registro de banho que a marca já usa: alta-chave, superfície clara, espuma e bolhas suspensas no ar, cão calmo e à vontade. É o único asset que mostra como **esta** marca fotografa estética animal | o laço, a toalha lilás de estúdio, o fundo chapado e o card branco de itens — card é layout, e layout aqui volta como texto |
+| 3 | `assets-source/hero-veterinaria-com-gato.jpg` | o jaleco roxo **real**: a trama do tecido, como o roxo se comporta na dobra da manga e o tom de pele do braço que sai dela. O `SUBJECT` deste bloco é um par de mãos em manga roxa, e este é o único arquivo que mostra uma | rosto, luva cirúrgica, mesa de inox ou qualquer sinal de ambiente clínico — a seção existe justamente para não parecer hospital |
+
+Por que o terceiro entra aqui e em nenhum outro lugar: são três coisas distintas e nenhuma está nas outras duas — cor de marca, registro de banho e tecido de jaleco. Se o resultado voltar com o crop do post (cão de frente, centralizado, fundo chapado), corte o item 3 e regere; se persistir, fique só com o logo.
 
 **Prompt completo:**
 
@@ -393,9 +551,19 @@ clinical equipment, cages, stainless medical instruments, monitors, restraint by
 a frightened or cowering dog, shampoo bottles.
 ```
 
+**Frase de anexo — colar DEPOIS do prompt, no mesmo envio (ordem: anexos → prompt → frase):**
+
+```
+Use the attached images as reference for color, light and material treatment only.
+Do not copy their framing, composition, crop or subject placement.
+Do not reproduce any logo, mark, lettering or symbol seen in them.
+```
+
 **Onde cai a copy:** headline e subheadline à esquerda; o card `faixa-pill-roxa` do **banho com sedação** — o mais importante da seção — sobre o terço esquerdo, com a palavra em âmbar; as duas colunas de serviços abaixo, com divisores tracejados em lilás `#E4D2F0`. Foto de pet estática nesta seção recebe o tratamento `arco-organico` (máscara arredondada assimétrica com contorno âmbar deslocado atrás), que é o tratamento mais característico da marca.
 
 **Teste de aceitação:** regerar se o cão parecer assustado, encolhido, ou preso pela coleira, e regerar se qualquer coisa clínica aparecer no quadro — mesa de inox, gaiola, monitor. Esta seção existe para **não** parecer hospital: é o único lugar da página onde a moldura de emergência precisa desaparecer por completo, e é isso que faz a frase "a clínica que existe para as três da manhã também é onde o seu pet toma banho" funcionar em vez de assustar.
+
+**Salvar como:** `design/renders/08-rotina-e-estetica.png`, e o clipe do Flow como `design/renders/08-rotina-e-estetica.mp4`.
 
 ---
 
@@ -424,8 +592,10 @@ Fundo creme `#F7F4EF` com o motivo de **patas em lilás `#E4D2F0` a 10% de opaci
 **Papel visual:** dolly-out lento, o percurso inverso exato do hero. A câmera recua pela rua, o quarteirão vai escurecendo, e a janela âmbar da recepção continua acesa — no fim do recuo é a única luz visível na rua inteira. O clipe termina parado nesse quadro e fica.
 
 > ## USAR FOTO REAL — não gerar
-> - **Plano aberto, quarteirão inteiro:** `assets/fachada-clinica-rua.webp`
-> - **Mobile 9:16:** `assets/fachada-clinica-vertical.png`
+> - **Plano aberto, quarteirão inteiro:** `assets-source/fachada-clinica-rua.webp`
+> - **Mobile 9:16:** `assets-source/fachada-clinica-vertical.png`
+
+**ANEXAR: nada — mesma razão da 01.** Seção sem geração não tem anexo. O que existe aqui é graduação sobre a foto real e um recuo de câmera gerado pelo Flow a partir dela, e nos dois casos o arquivo entra como imagem de origem, não como referência de estilo.
 
 **Tratamento:**
 - Mesmo ponto de vista e mesma lente do hero, agora **em plano aberto, sem o crop do terço inferior** — o quarteirão inteiro entra: o telhado do vizinho à esquerda, a loja vermelha à direita, os fios cruzando o céu.
@@ -436,6 +606,8 @@ Fundo creme `#F7F4EF` com o motivo de **patas em lilás `#E4D2F0` a 10% de opaci
 **Precificação declarada:** medium, 45% do Creative Budget — recuo de câmera na mesma fachada é um medium barato, e inflar essa curva era o ponto mais fácil de inflar do documento.
 
 **Teste de aceitação:** refazer o crop se a vitrine não for o ponto mais claro do quadro depois da graduação, se algum rosto ou placa de carro ficar legível, ou se o plano ficar tão aberto que a fachada deixe de ser reconhecível — quem passa de carro na Jacob Luchesi precisa reconhecer o prédio.
+
+**Salvar como:** nenhum still a salvar — mesma foto real da 01, em plano aberto. Suba `assets-source/fachada-clinica-rua.webp` no Flow e salve **o clipe que voltar** como `design/renders/11-contato.mp4`.
 
 ---
 

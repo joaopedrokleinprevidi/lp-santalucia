@@ -5,9 +5,10 @@
 > Fonte da verdade de cor, voz e fatos: `design/design-system.json`.
 > Regras técnicas: `.claude/skills/video-to-website/SKILL.md` e `decision.md`.
 
-**Convenção de nomes assumida** (o `image-prompts.md` ainda não foi escrito — quando for, tem
-que adotar esta convenção ou este arquivo quebra):
-`design/stills/NN-<id>.png` → `design/flow/NN-<id>.mp4` → `public/frames/<id>/frame_%04d.webp`
+**Convenção de nomes** (resolvida — still e clipe moram na **mesma pasta**, `design/renders/`,
+com o mesmo nome e extensões diferentes. Os caminhos e os comandos `ffmpeg` deste arquivo já
+estão nessa convenção, idêntica à do `image-prompts.md`):
+`design/renders/NN-<id>.png` → `design/renders/NN-<id>.mp4` → `public/frames/<id>/frame_%04d.webp`
 
 ---
 
@@ -110,7 +111,7 @@ faces anywhere: hands, forearms in violet scrubs, shoulders, or out-of-focus sil
 
 | | |
 |---|---|
-| **Still** | `design/stills/01-agora.png` — fachada à noite, vista da calçada oposta |
+| **Still** | `design/renders/01-agora.png` — fachada à noite, vista da calçada oposta |
 | **Técnica** | `loop <video>` — toca uma vez na entrada, descansa no último frame |
 | **Duração** | **6 s** |
 | **Budget** | 30% · small |
@@ -146,7 +147,7 @@ brilhante onde a copy vai entrar → regenerar.
 
 | | |
 |---|---|
-| **Still** | `design/stills/02-dois-caminhos.png` — balcão da recepção, frontal, câmera travada |
+| **Still** | `design/renders/02-dois-caminhos.png` — balcão da recepção, frontal, câmera travada |
 | **Técnica** | `currentTime` raspado em `≥1024px` · `loop <video>` toca-uma-vez no mobile |
 | **Duração** | **6 s** |
 | **Budget** | 45% · medium |
@@ -185,7 +186,7 @@ um pixel que seja, o efeito "mesma sala" morre → regenerar.
 
 | | |
 |---|---|
-| **Still** | `design/stills/03-e-grave.png` — corredor visto de quem acabou de entrar |
+| **Still** | `design/renders/03-e-grave.png` — corredor visto de quem acabou de entrar |
 | **Técnica** | **still apenas** — sem clipe, sem prompt de Flow |
 | **Duração** | — |
 | **Budget** | 15% · small por escolha |
@@ -209,7 +210,7 @@ uma linha de texto.
 
 | | |
 |---|---|
-| **Still** | `design/stills/04-primeiros-minutos.png` — POV do tutor na calçada, diante do vidro fechado |
+| **Still** | `design/renders/04-primeiros-minutos.png` — POV do tutor na calçada, diante do vidro fechado |
 | **Técnica** | **canvas frames** — `pin` + `scrub`, `FRAME_SPEED = 1.8` |
 | **Duração** | **6 s** → 150 frames |
 | **Budget** | 100% · o MAJOR da página |
@@ -247,7 +248,7 @@ corredor, *A conversa* na sala de exame acendendo. O scroll é a caminhada.
 
 ```bash
 mkdir -p public/frames/primeiros-minutos
-npx ffmpeg -i "design/flow/04-primeiros-minutos.mp4" \
+npx ffmpeg -i "design/renders/04-primeiros-minutos.mp4" \
   -vf "fps=25,scale=1440:-1:flags=lanczos" \
   -c:v libwebp -quality 72 \
   "public/frames/primeiros-minutos/frame_%04d.webp"
@@ -257,7 +258,7 @@ npx ffmpeg -i "design/flow/04-primeiros-minutos.mp4" \
 
 ```bash
 mkdir -p public/frames/primeiros-minutos-mobile
-npx ffmpeg -i "design/flow/04-primeiros-minutos.mp4" \
+npx ffmpeg -i "design/renders/04-primeiros-minutos.mp4" \
   -vf "fps=25,scale=720:-1:flags=lanczos" \
   -c:v libwebp -quality 60 \
   "public/frames/primeiros-minutos-mobile/frame_%04d.webp"
@@ -279,7 +280,7 @@ frame emocional da seção. Se as mãos morfarem, regenerar o still e refazer o 
 
 | | |
 |---|---|
-| **Still** | `design/stills/05-estrutura.svg` — corte axonométrico do prédio, ilustrado |
+| **Still** | `design/renders/05-estrutura.svg` — corte axonométrico do prédio, ilustrado |
 | **Técnica** | **still apenas** — animação em DOM/SVG, sem Flow |
 | **Duração** | — |
 | **Budget** | 50% · small |
@@ -303,7 +304,7 @@ traduzível.
 
 | | |
 |---|---|
-| **Still** | `design/stills/06-quando-precisa-ficar.png` — internação à noite, janela alta à esquerda |
+| **Still** | `design/renders/06-quando-precisa-ficar.png` — internação à noite, janela alta à esquerda |
 | **Técnica** | **canvas frames** — `pin` + `scrub`, `FRAME_SPEED = 1.8`, com gate |
 | **Duração** | **6 s** → 150 frames |
 | **Budget** | 90% · medium narrativo, pico técnico |
@@ -341,7 +342,7 @@ em ~55%, `07h40` em ~90%. Texto de processo, nunca de prognóstico.
 
 ```bash
 mkdir -p public/frames/quando-precisa-ficar
-npx ffmpeg -i "design/flow/06-quando-precisa-ficar.mp4" \
+npx ffmpeg -i "design/renders/06-quando-precisa-ficar.mp4" \
   -vf "fps=25,scale=1600:-1:flags=lanczos" \
   -c:v libwebp -quality 72 \
   "public/frames/quando-precisa-ficar/frame_%04d.webp"
@@ -351,7 +352,7 @@ npx ffmpeg -i "design/flow/06-quando-precisa-ficar.mp4" \
 
 ```bash
 mkdir -p public/frames/quando-precisa-ficar-mobile
-npx ffmpeg -i "design/flow/06-quando-precisa-ficar.mp4" \
+npx ffmpeg -i "design/renders/06-quando-precisa-ficar.mp4" \
   -vf "fps=25,scale=720:-1:flags=lanczos" \
   -c:v libwebp -quality 58 \
   "public/frames/quando-precisa-ficar-mobile/frame_%04d.webp"
@@ -380,7 +381,7 @@ sob reduced-motion e em conexão fraca.
 
 | | |
 |---|---|
-| **Still** | `design/stills/07-ala-felina.png` — parede frontal, vidro jateado à esquerda, gato à direita |
+| **Still** | `design/renders/07-ala-felina.png` — parede frontal, vidro jateado à esquerda, gato à direita |
 | **Técnica** | `loop <video>` — toca uma vez na entrada, descansa no último frame |
 | **Duração** | **5 s** |
 | **Budget** | 60% · small |
@@ -414,7 +415,7 @@ janela — é o poster da seção e precisa funcionar sozinho.
 
 | | |
 |---|---|
-| **Still** | `design/stills/08-rotina-e-estetica.png` — sala de banho e tosa em luz de manhã |
+| **Still** | `design/renders/08-rotina-e-estetica.png` — sala de banho e tosa em luz de manhã |
 | **Técnica** | `currentTime` raspado em `≥1024px` · `loop <video>` toca-uma-vez no mobile |
 | **Duração** | **6 s** |
 | **Budget** | 65% · medium |
@@ -492,7 +493,7 @@ expandir, que é o coração de contorno âmbar da marca, girando 45° na abertu
 
 | | |
 |---|---|
-| **Still** | `design/stills/11-contato.png` — mesma fachada da 01, mesmo ponto de vista, plano aberto |
+| **Still** | `design/renders/11-contato.png` — mesma fachada da 01, mesmo ponto de vista, plano aberto |
 | **Técnica** | `loop <video>` — toca uma vez na entrada, descansa no último frame |
 | **Duração** | **6 s** |
 | **Budget** | 45% · small |
@@ -567,12 +568,12 @@ só então `fps=25` → `20`. **Nunca cortar a contagem de frames abaixo de 150 
 
 ```bash
 # desktop — 1440px
-npx ffmpeg -i "design/flow/NN-<id>.mp4" -vf "scale=1440:-2" \
+npx ffmpeg -i "design/renders/NN-<id>.mp4" -vf "scale=1440:-2" \
   -c:v libx264 -profile:v high -crf 26 -preset slow -pix_fmt yuv420p \
   -movflags +faststart -an "public/video/<id>-1440.mp4"
 
 # mobile — 720px
-npx ffmpeg -i "design/flow/NN-<id>.mp4" -vf "scale=720:-2" \
+npx ffmpeg -i "design/renders/NN-<id>.mp4" -vf "scale=720:-2" \
   -c:v libx264 -profile:v high -crf 30 -preset slow -pix_fmt yuv420p \
   -movflags +faststart -an "public/video/<id>-720.mp4"
 ```
